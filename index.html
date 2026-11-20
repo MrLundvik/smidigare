@@ -1,0 +1,989 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1D6B57">
+<meta name="description" content="Rörlighetsprogram för hemmabruk med loggning, progression och golffokus.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Smidigare</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: mobilförst, en kolumn, fast flikrad nederst; kort bara för övningar och statusrutor */
+:root{
+  --bg:#F2F5F3; --surface:#FFFFFF; --ink:#16231E; --muted:#5B6B64; --line:#D7E0DB;
+  --accent:#1D6B57; --accent-ink:#FFFFFF; --accent-soft:#DCEDE6;
+  --sun:#E2A21B; --sun-soft:#FBF0D3; --warn:#B4442B; --warn-soft:#F8E1DA; --good:#2E7D4F;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Figtree","Segoe UI",system-ui,-apple-system,sans-serif;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1714; --surface:#17221E; --ink:#E5EEE9; --muted:#9AAEA5; --line:#2A3A33;
+  --accent:#5CC4A2; --accent-ink:#0B1A15; --accent-soft:#1E3A30;
+  --sun:#F0BC4A; --sun-soft:#3A3018; --warn:#F08B70; --warn-soft:#3D2019; --good:#6FD39A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1714; --surface:#17221E; --ink:#E5EEE9; --muted:#9AAEA5; --line:#2A3A33;
+  --accent:#5CC4A2; --accent-ink:#0B1A15; --accent-soft:#1E3A30;
+  --sun:#F0BC4A; --sun-soft:#3A3018; --warn:#F08B70; --warn-soft:#3D2019; --good:#6FD39A; color-scheme:dark}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0 calc(84px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:680px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em}
+h2{font-size:1.35rem;font-weight:800}
+h3{font-size:1.08rem;font-weight:600}
+p{margin:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:18px 8px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand svg{flex:none}
+.brand small{display:block;color:var(--muted);font-size:.8rem}
+.eyebrow{font-size:.74rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.banner{border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.banner.sun{background:var(--sun-soft)}
+.banner.acc{background:var(--accent-soft)}
+.banner.warn{background:var(--warn-soft)}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 14px;min-height:42px}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+button.ghost{background:transparent}
+button.link{border:none;background:none;padding:4px 0;min-height:0;color:var(--accent);font-weight:600;text-decoration:underline}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+button:disabled{opacity:.5;cursor:default}
+.chip{min-height:38px;padding:6px 12px;border-radius:999px;font-size:.92rem}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chip.bad[aria-pressed="true"]{background:var(--warn);border-color:var(--warn);color:var(--surface)}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 10px;min-height:42px;max-width:100%}
+textarea{width:100%;min-height:90px}
+label{display:flex;flex-direction:column;gap:4px;font-size:.92rem;font-weight:600}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+[hidden]{display:none!important}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);
+  padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));
+  display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
+.tabs button{border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.74rem;padding:6px 2px;color:var(--muted);min-height:52px}
+.tabs button[aria-current="page"]{color:var(--accent);font-weight:700}
+.tabs svg{width:22px;height:22px}
+.sec-label{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:6px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.ex{display:flex;flex-direction:column;gap:10px}
+.ex-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.ex-head > div{min-width:0}
+.dose{font-variant-numeric:tabular-nums;font-weight:700;color:var(--accent);white-space:nowrap}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);letter-spacing:.02em}
+.tag.golf{background:var(--sun-soft);color:var(--ink)}
+.steps{display:flex;gap:4px;align-items:center}
+.steps i{display:block;width:16px;height:6px;border-radius:3px;background:var(--line)}
+.steps i.on{background:var(--accent)}
+.ex.done{opacity:.72}
+.ex.done .ex-head h3::after{content:" ✓";color:var(--good)}
+details summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:.92rem}
+details[open] summary{margin-bottom:6px}
+.timerbar{position:fixed;left:0;right:0;bottom:calc(64px + env(safe-area-inset-bottom,0px));z-index:19;background:var(--ink);color:var(--bg);
+  padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));display:flex;align-items:center;justify-content:space-between;gap:12px}
+.timerbar .big{font-family:var(--f-display);font-size:2rem;font-weight:800;font-variant-numeric:tabular-nums}
+.timerbar button{background:transparent;color:var(--bg);border-color:var(--bg)}
+.week{display:flex;flex-direction:column;gap:8px}
+.day{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface)}
+.day.today{border-color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
+.day .d{font-family:var(--f-display);font-weight:800}
+.day > div{min-width:0}
+.ok{color:var(--good);font-weight:700}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:.92rem}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tscroll{overflow-x:auto}
+.kv{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 16px}
+.prose{display:flex;flex-direction:column;gap:10px;max-width:65ch}
+.prose ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px}
+.ref{font-size:.8rem;color:var(--muted)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(140px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;max-width:calc(100% - 32px)}
+svg text{fill:var(--muted);font-family:var(--f-body)}
+.stat{display:flex;flex-direction:column}
+.stat b{font-family:var(--f-display);font-size:1.6rem;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:no-preference){.ex{transition:opacity .2s}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="16" fill="var(--accent)"/><path d="M9 23c3-9 8-12 16-13" stroke="var(--accent-ink)" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="25" cy="10" r="2.6" fill="var(--sun)"/></svg>
+      <div><h1 style="font-size:1.35rem">Smidigare</h1><small id="phaseLine">Rörlighet, styrka och golf</small></div>
+    </div>
+    <button class="ghost" id="settingsBtn" aria-label="Inställningar">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
+  </header>
+  <main id="view" class="stack"><div class="card"><p class="muted">Laddar ditt program…</p></div></main>
+</div>
+<div id="timer" class="timerbar" hidden></div>
+<nav class="tabs" id="tabs" aria-label="Huvudmeny"></nav>
+
+<script>
+// @@DATA_START
+const PHASES = [
+  {name:"Fas 1 · Grund", weeks:"v. 1–4", str:{sets:2,reps:"8–10"}, hold:30, bal:20, note:"Lär dig rörelserna, lugnt tempo, inga floor-krav."},
+  {name:"Fas 2 · Bygga", weeks:"v. 5–8", str:{sets:2,reps:"10–12"}, hold:45, bal:30, note:"Längre stretch, fler repetitioner."},
+  {name:"Fas 3 · Utveckla", weeks:"v. 9–16", str:{sets:3,reps:"10–12"}, hold:60, bal:30, note:"Full dos: 3 set styrka och 60 s stretch."}
+];
+const STRETCH_SETS = 2;
+
+// cat: warm | mob | str | bal | stretch | breath. Steg markerade floor:true kräver att du kan gå ned på golvet.
+const EX = {
+ W1:{name:"Marsch på stället", cat:"warm", area:"Hela kroppen", steps:[
+   {n:"Marsch med stöd", dose:"2 min", t:120, how:"Stå bakom en stol och håll lätt i ryggstödet. Marschera i lugnt tempo, lyft knäna så högt det känns bekvämt och låt armarna pendla."},
+   {n:"Marsch med armsving", dose:"2 min", t:120, how:"Utan stöd om balansen tillåter. Lyft knäna mot höfthöjd och sväng armarna aktivt. Du ska bli lite varm, inte andfådd."},
+   {n:"Marsch och sidosteg", dose:"3 min", t:180, how:"1 min marsch, 1 min sidosteg fram och tillbaka, 1 min marsch med högre knän."}]},
+ W2:{name:"Axlar och armar", cat:"warm", area:"Axlar", steps:[
+   {n:"Axelrullningar och armcirklar", dose:"10 per riktning", t:90, how:"Rulla axlarna bakåt 10 gånger och framåt 10 gånger. Gör sedan armcirklar som börjar små och blir större."},
+   {n:"Armcirklar och kramar", dose:"10 + 10", t:90, how:"Stora armcirklar, sedan öppna armarna brett och korsa dem framför bröstet som en kram, omväxlande vilken arm som ligger överst."},
+   {n:"Armsving med kvast", dose:"10 långsamma", t:90, how:"Håll en kvast eller pinne med brett grepp. För den långsamt upp över huvudet och så långt bakåt det går utan smärta, och tillbaka."}]},
+ W3:{name:"Höftcirklar", cat:"warm", area:"Höfter", steps:[
+   {n:"Höftcirklar med stöd", dose:"8 per riktning", t:90, how:"Händerna på stolsryggen, fötterna höftbrett. Rita stora, långsamma cirklar med bäckenet."},
+   {n:"Knäcirklar", dose:"6 per riktning och ben", t:120, how:"Håll i stolen, lyft ena knät framför dig och rita cirklar med knät. Det smörjer höftleden."},
+   {n:"Grinden", dose:"6 per ben och riktning", t:120, how:"Lyft knät framför dig, för det ut åt sidan och ned, som att kliva över en grind. Sedan baklänges."}]},
+ W4:{name:"Katt och ko", cat:"warm", area:"Rygg", steps:[
+   {n:"Sittande katt och ko", dose:"8 långsamma", t:90, how:"Sitt på stolskanten med händerna på knäna. Andas in och skjut fram bröstet. Andas ut, runda ryggen och dra in hakan."},
+   {n:"Stående katt och ko", dose:"8 långsamma", t:90, how:"Stå med fötterna brett, mjuka knän och händerna på låren. Svanka och runda ryggen omväxlande, i takt med andningen."},
+   {n:"Katt och ko på alla fyra", dose:"10 långsamma", t:90, floor:true, how:"På alla fyra med en kudde under knäna. Händerna under axlarna, knäna under höfterna. Rör dig kota för kota."}]},
+
+ M1:{name:"Bålrotation", cat:"mob", golf:true, sides:true, area:"Bröstrygg", steps:[
+   {n:"Sittande rotation, armarna i kors", dose:"8 per sida", how:"Sitt långt fram på stolen, fötterna stadigt i golvet, armarna i kors över bröstet. Vrid överkroppen åt ena hållet, håll 2 s, och tillbaka. Knäna står still."},
+   {n:"Sittande rotation med kvast", dose:"8 per sida", how:"Lägg en kvast över skuldrorna och håll den med händerna. Vrid och andas ut i ändläget. Rörelsen ska komma mellan skulderbladen, inte från ländryggen."},
+   {n:"Rotation i golfposition", dose:"8 per sida", how:"Stå som vid bollen: mjuka knän, fäll fram från höften, kvasten över bröstet. Vrid axlarna så långt du kan utan att höfterna följer med. Håll 3 s."}]},
+ M2:{name:"Öppna boken", cat:"mob", golf:true, sides:true, area:"Bröstrygg och axel", steps:[
+   {n:"Öppna boken mot vägg", dose:"8 per sida", how:"Stå med sidan mot en vägg, armarna raka framåt i axelhöjd. För den yttre armen i en båge bakåt mot väggen och följ handen med blicken. Bara så långt det känns bekvämt."},
+   {n:"Öppna boken i sängen", dose:"8 per sida", how:"Ligg på sidan i sängen med knäna böjda och en kudde under huvudet, armarna raka framför dig. Öppna den övre armen i en båge bakåt, knäna ligger kvar ihop."},
+   {n:"Öppna boken på golvet med paus", dose:"8 per sida", floor:true, how:"Som i sängen men på golvet, med en hoprullad handduk mellan knäna. Håll 3 s i ändläget och andas ut."}]},
+ M3:{name:"Höftgångjärn", cat:"mob", golf:true, area:"Höft och baksida lår", steps:[
+   {n:"Rumpan mot väggen", dose:"10", how:"Stå med ryggen en fotlängd från en vägg. Skjut rumpan bakåt mot väggen med rak rygg och mjuka knän tills den nuddar. Tryck dig tillbaka med sätet."},
+   {n:"Höftgångjärn med kvast", dose:"10", how:"Håll kvasten längs ryggen så att den har kontakt med bakhuvud, mellan skulderbladen och korsryggen. Fäll framåt från höften utan att tappa kontakten. Det är golfens adressposition."},
+   {n:"Enbens gångjärn med stöd", dose:"6 per ben", how:"En hand på stolen. Fäll framåt på ett ben medan det andra sträcks rakt bakåt, som att plocka upp en golfboll. Höften pekar mot golvet hela tiden."}]},
+ M4:{name:"Benpendel", cat:"mob", sides:true, area:"Höfter", steps:[
+   {n:"Benpendel framåt och bakåt", dose:"10 per ben", how:"Håll i en stol med en hand. Låt benet pendla avslappnat framåt och bakåt. Öka utslaget lite i taget."},
+   {n:"Benpendel framåt och i sidled", dose:"10 + 10 per ben", how:"Först framåt–bakåt, sedan med båda händerna på stolen: pendla benet i sidled framför kroppen."},
+   {n:"Benpendel och knäkram", dose:"10 + 5 per ben", how:"Benpendel som steg 2, avsluta med att dra knät mot bröstet med händerna och hålla 2 s, 5 gånger per sida."}]},
+ M5:{name:"Bröstöppnare", cat:"mob", area:"Bröstrygg", steps:[
+   {n:"Bakåtlutning över stolsryggen", dose:"8", how:"Sitt med ryggen mot ett stadigt ryggstöd, händerna knäppta bakom nacken. Luta överkroppen bakåt över ryggstödets kant så att armbågarna pekar uppåt. Andas in i ändläget."},
+   {n:"Bröstöppnare mot bänk", dose:"8 × 3 s", how:"Stå framför köksbänken med armbågarna på kanten och händerna ihop. Skjut rumpan bakåt och låt bröstet sjunka mot golvet. Håll 3 s."},
+   {n:"Handduksrulle på golvet", dose:"8 × 3 s", floor:true, how:"Ligg på rygg med en hårt rullad handduk tvärs under bröstryggen och händerna bakom huvudet. Luta dig bakåt över rullen. Flytta rullen ett snäpp och upprepa."}]},
+ M6:{name:"Knä mot vägg", cat:"mob", sides:true, area:"Fotled", steps:[
+   {n:"Knä mot vägg", dose:"10 per sida", how:"Stå vänd mot väggen med ena foten en handsbredd från den, händerna mot väggen. För knät fram mot väggen utan att hälen lyfter."},
+   {n:"Knä mot vägg, längre ut", dose:"10 per sida", how:"Flytta foten en bit längre från väggen. Hälen ska fortfarande ligga kvar när knät nuddar."},
+   {n:"Knä mot vägg i tre riktningar", dose:"6 × 3 per sida", how:"För knät mot väggen rakt fram, sedan ut mot lilltån och in mot stortån."}]},
+ M7:{name:"Handleder och underarmar", cat:"mob", golf:true, area:"Handled", steps:[
+   {n:"Handledsåttor och bönestretch", dose:"10 + 20 s", how:"Knäpp händerna och rita åttor 10 gånger. Pressa sedan handflatorna ihop framför bröstet och sänk händerna tills det sträcker, 20 s."},
+   {n:"Underarmsstretch mot bord", dose:"20 s + 20 s", how:"Händerna på bordet med fingrarna mot dig och raka armar, luta lätt bakåt. Vänd sedan händerna och lägg handryggarna mot bordet."},
+   {n:"Vindrutetorkare med kvast", dose:"10 per hand", how:"Håll kvasten i ena änden rakt upp. Vrid långsamt åt båda sidorna med underarmen, som en vindrutetorkare. Kortare grepp blir lättare."}]},
+ M8:{name:"Vägg-glid", cat:"mob", area:"Axlar", steps:[
+   {n:"Underarmarna mot väggen", dose:"8–10", how:"Stå vänd mot väggen med underarmarna mot den, armbågarna i axelhöjd. Glid uppåt så långt det går bekvämt. Dra ned skulderbladen när du kommer tillbaka."},
+   {n:"Ryggen mot väggen", dose:"8–10", how:"Stå med rygg och bakhuvud mot väggen, fötterna en bit ut. Armarna i W-form mot väggen, glid upp till Y och tillbaka."},
+   {n:"W till Y med lyft", dose:"8–10", how:"Som steg 2, men lyft händerna 2 cm från väggen i toppläget och håll 2 s."}]},
+ M9:{name:"Höftrotation", cat:"mob", golf:true, sides:true, area:"Höftrotation", steps:[
+   {n:"Sittande höftrotation", dose:"8 per sida", how:"Sitt på stolskanten med knäna i 90°. Håll knät still och låt foten glida utåt och sedan inåt. Det vrider höftleden åt båda hållen, som i golfsvingen."},
+   {n:"Vindrutetorkare med knäna", dose:"8 per sida", how:"Sitt i sängen eller på golvet med händerna bakom dig och fötterna brett. Fäll båda knäna åt ena sidan och sedan åt den andra."},
+   {n:"90/90-sittande", dose:"6 per sida", floor:true, how:"Sitt på golvet med båda knäna böjda 90°, ett framför och ett åt sidan. Sitt lång i ryggen och växla sida med hjälp av händerna."}]},
+
+ S1:{name:"Uppresning från stol", cat:"str", area:"Ben och säte", steps:[
+   {n:"Med armstöd", how:"Hög stol eller kudde på sitsen. Fötterna bakom knäna, luta fram med näsan över tårna och res dig. Ta hjälp av armstöden så lite som möjligt."},
+   {n:"Utan händer", how:"Armarna i kors över bröstet. Res dig utan att svänga. Sätt dig kontrollerat."},
+   {n:"Långsam med vikt", how:"Håll en kasse med vattenflaskor (3–6 kg) mot bröstet. Sätt dig på 3 s och res dig i normal fart."}]},
+ S2:{name:"Armhävning", cat:"str", area:"Bröst och armar", steps:[
+   {n:"Mot vägg", how:"Händerna mot väggen i axelhöjd, fötterna en bit ut. Kroppen rak som en planka, böj armarna tills näsan nästan nuddar."},
+   {n:"Mot köksbänk", how:"Händerna på bänkskivan. Lägre vinkel ger mer vikt på armarna. Spänn magen."},
+   {n:"Mot stol eller soffkant", how:"Stadig stol mot väggen eller soffkant. Kroppen rak, sänk bröstet kontrollerat."}]},
+ S3:{name:"Enarmsrodd", cat:"str", sides:true, area:"Övre rygg", steps:[
+   {n:"Rodd med lätt kasse", how:"Ena handen på bord eller stol, andra handen håller en kasse på 2–4 kg. Dra armbågen bakåt mot höften och kläm ihop skulderbladen."},
+   {n:"Tyngre kasse med paus", how:"4–7 kg. Håll 1 s i toppläget, sänk på 2 s."},
+   {n:"Tung rodd med rotation", how:"7–10 kg. Låt bröstkorgen vrida med lite i toppläget, det tränar rotation med belastning."}]},
+ S4:{name:"Höftlyft", cat:"str", area:"Säte", steps:[
+   {n:"Stående höftsträck", how:"Håll i stolen och stå rak. Sträck ena benet bakåt med rakt knä och kläm med sätet, utan att svanka. Varannat ben, räkna per ben."},
+   {n:"Höftlyft i sängen", how:"Ligg på rygg med böjda knän. Tryck ned hälarna och lyft rumpan tills höft och knän är i linje. Sänk långsamt."},
+   {n:"Höftlyft på golvet, 3 s paus", floor:true, how:"Som i sängen, men på golvet, och håll 3 s i toppläget."}]},
+ S6:{name:"Benstyrka i steg", cat:"str", sides:true, area:"Ben och höfter", steps:[
+   {n:"Uppsteg på trappsteg", how:"Håll i ledstången. Kliv upp med hela foten på steget, tryck dig upp med det övre benet och kliv ned kontrollerat."},
+   {n:"Delad knäböj med stöd", how:"Ett långt steg isär, håll i en stol. Sänk bakre knät rakt ned mot golvet och tryck upp. Främre knät över foten."},
+   {n:"Bakåtutfall med stöd", how:"Kliv bakåt i ett utfall, sänk och kliv tillbaka. Stöd i stolen vid behov."}]},
+ S7:{name:"Vedhuggaren", cat:"str", golf:true, sides:true, area:"Rotation och kraft", steps:[
+   {n:"Diagonallyft utan vikt", how:"Stå brett, händerna ihop vid ena höften. För händerna diagonalt upp över motsatt axel och låt fötter och höfter vrida med."},
+   {n:"Med vattenflaska", how:"Håll en flaska på 1–2 kg med båda händerna. Samma diagonala rörelse, kontrollerat."},
+   {n:"Snabbare med 2–4 kg", how:"Kontrollerad rörelse ned, snabbare och kraftfull uppåt. Det tränar rotationskraften i svingen."}]},
+ S8:{name:"Fågelhunden", cat:"str", sides:true, area:"Bål", steps:[
+   {n:"Stående mot vägg", how:"Händerna mot väggen. Lyft ena armen upp längs väggen och sträck motsatt ben bakåt. Håll 2 s, byt sida. Räkna per sida."},
+   {n:"På alla fyra i sängen", how:"På knän och händer i sängen eller på en matta. Sträck ena armen eller ena benet. Ryggen ska vara stilla."},
+   {n:"Arm och ben, 5 s paus", floor:true, how:"Sträck motsatt arm och ben samtidigt och håll 5 s. Ingen rotation i bäckenet."}]},
+ S9:{name:"Sidolyft", cat:"str", sides:true, area:"Höftens utsida", steps:[
+   {n:"Stående sidolyft med stöd", how:"Håll i stolen. Lyft benet rakt ut åt sidan med tårna framåt, sänk långsamt. Överkroppen ska vara upprätt."},
+   {n:"Sidoliggande benlyft", how:"Ligg på sidan i sängen. Lyft det övre benet med tårna lätt nedåt, sänk långsamt."},
+   {n:"Sidoplanka från knä", floor:true, how:"Ligg på sidan med böjda knän, armbågen under axeln. Lyft höften så att kroppen blir rak. Räkna sekunder i stället för repetitioner: 10–20 s."}]},
+ S10:{name:"Ned och upp från golvet", cat:"str", skill:true, area:"Vardagsstyrka", steps:[
+   {n:"Ned på knä och upp", reps:"3", how:"Stol framför dig, kudde under knät. Kliv ned på ett knä, sedan båda. Res dig via ett knä i taget med händerna på stolen. Hoppa över om knäna inte tillåter."},
+   {n:"Ned till sittande och upp", reps:"3", how:"Via knästående ned till sittande på golvet och samma väg upp, med stolen som stöd."},
+   {n:"Med så lite stöd som möjligt", reps:"3–5", how:"Ned till sittande och upp. Räkna hur många stöd (händer, knän) du behöver och försök minska."}]},
+
+ B1:{name:"Enbensstående", cat:"bal", sides:true, area:"Balans", steps:[
+   {n:"Med en hand på stolen", how:"Stå på ett ben nära en stol och håll lätt i den. Blicken framåt."},
+   {n:"Fingertopp eller inget stöd", how:"Nudda stolen bara med fingertoppen, eller släpp när det går."},
+   {n:"Utan stöd, vrid huvudet", how:"Stå på ett ben utan stöd och vrid huvudet långsamt åt sidorna. Stolen står kvar inom räckhåll."}]},
+ B2:{name:"Golfbalans", cat:"bal", golf:true, sides:true, area:"Balans", steps:[
+   {n:"Häl mot tå med stöd", how:"Ställ ena foten direkt framför den andra, häl mot tå, med en hand på bänken eller väggen. Byt främre fot."},
+   {n:"Linjegång längs väggen", dose:"10 steg × 3", t:120, how:"Gå häl mot tå längs en vägg, 10 steg, vänd och gå tillbaka."},
+   {n:"Långsam sving med avslut", dose:"8 sving", t:150, how:"Sving kvasten långsamt. Stanna i avslutsposition med vikten på framåtbenet och baksidans häl uppe i 5 s."}]},
+
+ T1:{name:"Baksida lår", cat:"stretch", sides:true, area:"Baksida lår", steps:[
+   {n:"Sittande på stolskanten", how:"Sitt på stolskanten med ena benet rakt fram och hälen i golvet. Fäll framåt från höften med rak rygg tills det sträcker bak i låret."},
+   {n:"Hälen på trappsteg", how:"Stå och ställ hälen på ett lågt steg med rakt knä. Fäll framåt från höften, ryggen rak."},
+   {n:"Liggande med handduk", how:"Ligg på rygg (säng eller golv), handduk runt foten. Dra upp det raka benet tills det sträcker. Andra benet böjt."}]},
+ T2:{name:"Höftböjare", cat:"stretch", golf:true, sides:true, area:"Höftens framsida", steps:[
+   {n:"Stående delad stretch", how:"Håll i en stol och ta ett långt steg. Bakre hälen lyft. Kläm med sätet och tippa bäckenet bakåt, svanka inte. Du känner det framtill på bakre höften."},
+   {n:"Halvknästående", floor:true, how:"Ett knä på en kudde, andra foten fram. Kläm med sätet och för höften lätt framåt. Stöd i stol vid behov."},
+   {n:"Halvknästående med sidoböj", floor:true, how:"Som steg 2, sträck armen på bakre benets sida upp och luta åt motsatt sida."}]},
+ T3:{name:"Säte (figur 4)", cat:"stretch", golf:true, sides:true, area:"Säte och höft", steps:[
+   {n:"Sittande figur 4", how:"Sitt på stolen och lägg ena vristen på motsatt knä. Luta överkroppen framåt med rak rygg. Det går bra att inte komma långt."},
+   {n:"Figur 4 med rotation", how:"Som steg 1, men luta bröstet mot det böjda knät och sedan mot foten."},
+   {n:"Liggande figur 4", how:"Ligg på rygg, vristen på motsatt knä, dra det nedre benet mot dig. Säng går bra."}]},
+ T4:{name:"Bröst i dörrkarm", cat:"stretch", golf:true, sides:true, area:"Bröst och axel", steps:[
+   {n:"Armbåge i axelhöjd", how:"Underarmen mot dörrkarmen, armbågen i axelhöjd. Vrid bröstet bort från armen tills det sträcker framtill i bröstet."},
+   {n:"Armbåge högt", how:"Armbågen en bit över axelhöjd. Sträcker längre ned i bröstmuskeln."},
+   {n:"Båda armarna, kliv fram", how:"Båda underarmarna mot dörrkarmen, kliv sakta igenom öppningen. Räknas som båda sidor samtidigt."}]},
+ T6:{name:"Sida och lats", cat:"stretch", golf:true, sides:true, area:"Sida och rygg", steps:[
+   {n:"Sittande sidoböj", how:"Sitt, sträck ena armen upp över huvudet och luta åt motsatt sida. Båda sittbenen kvar mot stolen."},
+   {n:"Häng i dörrkarmen", how:"Håll i dörrkarmen med båda händerna i höjd med huvudet och luta höften åt motsatt håll."},
+   {n:"Bönestretch mot stol", floor:true, how:"Knästå framför en stol med armbågarna på sitsen och händerna ihop. Skjut rumpan mot hälarna."}]},
+ H1:{name:"Andning 4–6", cat:"breath", area:"Nedvarvning", steps:[
+   {n:"Lugn magandning", dose:"2 min", t:120, how:"Sitt bekvämt med en hand på magen. Andas in genom näsan i 4 s så att magen höjs, ut genom munnen i 6 s. Lugnar nervsystemet och minskar muskelspänning."}]}
+};
+
+const TEMPLATES = {
+  A:{name:"Ben och höft", short:"Ben & höft", desc:"Styrka i fullt rörelseomfång för ben och säte, plus höftrörlighet.", items:["W1","W3","M3","M9","S1","S6","S4","B1","T2","T3","T1","H1"]},
+  B:{name:"Överkropp och bål", short:"Överkropp", desc:"Axlar, bröstrygg och bål, och övning i att ta sig ned och upp från golvet.", items:["W1","W2","M5","M8","M2","S2","S3","S8","S10","B2","T4","T6","H1"]},
+  G:{name:"Golf och rotation", short:"Golf", desc:"Rotation i bröstrygg och höft, rotationskraft och balans för svingen.", items:["W1","M1","M3","M7","S7","S1","S9","B2","T2","T3","T4","H1"]},
+  R:{name:"Rörlighet", short:"Rörlighet", desc:"Rörlighetspass utan styrka. Längre stretch för de stelaste områdena.", items:["W1","W4","M1","M2","M5","M9","M6","M4","B1","T1","T2","T3","T4","T6","H1"]},
+  L:{name:"Lätt dag", short:"Lätt", desc:"Kort pass för lediga dagar eller dagar med dålig form. Lägg gärna till en promenad.", items:["W1","W4","M1","M4","M5","T2","T3","T4","H1"]},
+  P:{name:"Före golfrundan", short:"Före golf", desc:"Dynamisk uppvärmning på cirka 10 min innan du slår första bollen. Ingen lång statisk stretch före spel.", items:["W1","M4","M1","M3","M7","S7"], light:true}
+};
+// getDay(): 0 = söndag
+const WEEK = {1:"A",2:"R",3:"B",4:"R",5:"G",6:"L",0:null};
+const DAYNAMES = ["Sön","Mån","Tis","Ons","Tor","Fre","Lör"];
+
+function maxStep(ex, floorOk){
+  let m = ex.steps.length;
+  if(!floorOk){ for(let i=0;i<ex.steps.length;i++){ if(ex.steps[i].floor){ m = i; break; } } }
+  return Math.max(1, m);
+}
+function doseFor(id, stepIdx, phase, light){
+  const ex = EX[id], st = ex.steps[stepIdx] || ex.steps[0], P = PHASES[phase];
+  const per = ex.sides ? " per sida" : "";
+  switch(ex.cat){
+    case "warm": case "mob": case "breath": return {text: st.dose, sec: st.t || (ex.sides?120:90)};
+    case "str": {
+      if(light) return {text:"1 × 8"+per+", lätt", sec: ex.sides?90:60};
+      const sets = ex.skill ? 2 : P.str.sets;
+      const reps = st.reps || P.str.reps;
+      return {text: `${sets} × ${reps}${per}`, sec: sets*((ex.sides?2:1)*40 + 45), sets};
+    }
+    case "bal": {
+      if(st.dose) return {text: st.dose, sec: st.t};
+      return {text:`2 × ${P.bal} s${per}`, sec: 2*P.bal*(ex.sides?2:1)+15, hold:P.bal, sets:2};
+    }
+    case "stretch": {
+      const both = id==="T4" && stepIdx===2;
+      const sides = ex.sides && !both;
+      return {text:`${STRETCH_SETS} × ${P.hold} s${sides?per:""}`, sec: STRETCH_SETS*P.hold*(sides?2:1)+20, hold:P.hold, sets:STRETCH_SETS, sides};
+    }
+  }
+  return {text:"", sec:60};
+}
+function estMinutes(tpl, phase, steps, floorOk){
+  const T = TEMPLATES[tpl]; let s = 0;
+  for(const id of T.items){
+    const st = Math.min((steps[id]?.step ?? 1), maxStep(EX[id], floorOk)) - 1;
+    s += doseFor(id, st, phase, T.light).sec + 15; // +15 s byte mellan övningar
+  }
+  return Math.round(s/60);
+}
+const USED = Object.keys(EX).filter(id=>Object.values(TEMPLATES).some(t=>!t.light && t.items.includes(id)));
+// @@DATA_END
+
+/* ---------------- Lagring ---------------- */
+const LS_KEY = "smidigare.v1";
+const store = {
+  mode:"local", db:null, uid:null, q:Promise.resolve(),
+  async init(){
+    try{
+      if(window.claude && typeof window.claude.use === "function"){
+        const [db, user] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
+        if(db && user){ const id = await user.id(); if(id){ this.db = db; this.uid = id; this.mode = "db"; } }
+      }
+    }catch(e){ console.warn("db saknas", e); }
+  },
+  stateRef(){ return this.db.doc(`data/users/${this.uid}/state`); },
+  async load(){
+    if(this.mode === "db"){
+      const timeout = new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")),10000));
+      try{
+        const run = async ()=>{
+          const s = await this.stateRef().get();
+          const logs = await this.stateRef().collection("logs").orderBy("ts","desc").limit(500).get();
+          const tests = await this.stateRef().collection("tests").orderBy("ts","desc").limit(100).get();
+          return { state: s.exists ? s.data() : null, logs: logs.docs.map(d=>({...d.data(), _id:d.id})), tests: tests.docs.map(d=>({...d.data(), _id:d.id})) };
+        };
+        return await Promise.race([run(), timeout]);
+      }catch(e){ console.warn(e); toast("Kunde inte nå lagringen. Visar lokal kopia."); this.mode = "local"; }
+    }
+    try{ const raw = localStorage.getItem(LS_KEY); if(raw){ const d = JSON.parse(raw); return {state:d.state||null, logs:d.logs||[], tests:d.tests||[]}; } }catch(e){}
+    return {state:null, logs:[], tests:[]};
+  },
+  local(){ try{ localStorage.setItem(LS_KEY, JSON.stringify({state:S.state, logs:S.logs, tests:S.tests})); }catch(e){} },
+  saveState(){
+    this.local();
+    if(this.mode !== "db") return Promise.resolve();
+    const snap = JSON.parse(JSON.stringify(S.state));
+    this.q = this.q.then(()=>this.stateRef().set(snap)).catch(e=>{ console.warn(e); toast("Sparningen misslyckades. Försök igen senare."); });
+    return this.q;
+  },
+  async add(coll, entry){
+    if(this.mode === "db"){
+      try{ const ref = await this.stateRef().collection(coll).add(entry); entry._id = ref.id; }
+      catch(e){ console.warn(e); toast("Kunde inte spara i molnet, sparat lokalt."); }
+    }
+    this.local();
+  },
+  async remove(coll, entry){
+    if(this.mode === "db" && entry._id){ try{ await this.stateRef().collection(coll).doc(entry._id).delete(); }catch(e){ console.warn(e); } }
+    this.local();
+  }
+};
+
+/* ---------------- Tillstånd ---------------- */
+const S = { state:null, logs:[], tests:[], tab:"idag", session:null, view:null };
+const today = () => isoDate(new Date());
+function isoDate(d){ const z=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`; }
+function parseISO(s){ const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); }
+function daysBetween(a,b){ return Math.round((parseISO(b)-parseISO(a))/86400000); }
+function fmtDate(s){ const d=parseISO(s); return d.toLocaleDateString("sv-SE",{weekday:"short",day:"numeric",month:"short"}); }
+function newState(){
+  const steps = {}; Object.keys(EX).forEach(id=>steps[id]={step:1,easy:0,hard:0});
+  return { v:1, startDate:today(), phase:0, phaseStart:today(), steps, settings:{floor:false, walk:true}, notices:[], onboarded:false, updateFlag:false };
+}
+function migrate(st){
+  Object.keys(EX).forEach(id=>{ if(!st.steps[id]) st.steps[id]={step:1,easy:0,hard:0}; });
+  st.settings = Object.assign({floor:false, walk:true}, st.settings||{});
+  st.notices = st.notices || [];
+  return st;
+}
+function sessionLogs(){ return S.logs.filter(l=>l.type==="session"); }
+function adherence14(){
+  const t = today();
+  const n = sessionLogs().filter(l=>{ const d=daysBetween(l.date,t); return d>=0 && d<14 && l.template!=="P"; });
+  const days = new Set(n.map(l=>l.date)).size;
+  return Math.min(1, days/10); // 5 planerade pass per vecka
+}
+function addNotice(text, kind="acc"){ S.state.notices.unshift({date:today(), text, kind}); S.state.notices = S.state.notices.slice(0,12); }
+
+/* ------------- Progression ------------- */
+function applyProgression(entry){
+  const st = S.state, floorOk = st.settings.floor;
+  for(const it of entry.items){
+    if(!it.done || TEMPLATES[entry.template].light) continue;
+    const ex = EX[it.id], rec = st.steps[it.id], max = maxStep(ex, floorOk);
+    if(it.pain){
+      rec.easy = 0; rec.hard = 0;
+      if(rec.step > 1){ rec.step--; addNotice(`${ex.name}: tillbaka till steg ${rec.step} (${ex.steps[rec.step-1].n}) eftersom det gjorde ont. Gå bara så långt det känns okej.`, "warn"); }
+      else addNotice(`${ex.name} gjorde ont. Minska rörelseomfånget, och hoppa över den om smärtan är kvar nästa morgon.`, "warn");
+      continue;
+    }
+    if(it.rating === "easy"){ rec.easy++; rec.hard = 0;
+      if(rec.easy >= 3){ rec.easy = 0;
+        if(rec.step < max){ rec.step++; addNotice(`${ex.name}: upp till steg ${rec.step}, ${ex.steps[rec.step-1].n}. Bra jobbat!`); }
+        else rec.maxed = true;
+      }
+    } else if(it.rating === "hard"){ rec.hard++; rec.easy = 0;
+      if(rec.hard >= 2){ rec.hard = 0; if(rec.step > 1){ rec.step--; addNotice(`${ex.name}: tillbaka till steg ${rec.step} ett tag. Det är helt normalt.`, "warn"); } }
+    } else if(it.rating === "ok"){ rec.easy = Math.max(0, rec.easy-1); rec.hard = 0; }
+  }
+  checkPhase();
+}
+function checkPhase(){
+  const st = S.state, inPhase = daysBetween(st.phaseStart, today()), adh = adherence14();
+  if(st.phase < 2 && inPhase >= 28){
+    if(adh >= 0.6){ st.phase++; st.phaseStart = today(); addNotice(`Du går upp till ${PHASES[st.phase].name}. ${PHASES[st.phase].note}`); }
+    else if(!st.lowAdhNote || daysBetween(st.lowAdhNote, today()) >= 7){ st.lowAdhNote = today(); addNotice(`Du stannar i ${PHASES[st.phase].name} en vecka till. Sikta på minst 3–4 pass i veckan, då kommer du vidare.`, "sun"); }
+  }
+  st.updateFlag = needsUpdate();
+}
+function needsUpdate(){
+  const st = S.state; const floorOk = st.settings.floor;
+  const ids = USED.filter(id=>EX[id].steps.length>1);
+  const top = ids.filter(id=>st.steps[id].step >= EX[id].steps.length).length / ids.length;
+  const capped = ids.filter(id=>st.steps[id].step >= maxStep(EX[id], floorOk) && (st.steps[id].maxed)).length / ids.length;
+  return (st.phase === 2 && daysBetween(st.phaseStart, today()) >= 56) || top >= 0.75 || capped >= 0.75;
+}
+
+/* ---------------- UI-hjälp ---------------- */
+const $ = s => document.querySelector(s);
+function h(tag, attrs={}, ...kids){
+  const el = document.createElement(tag);
+  for(const [k,v] of Object.entries(attrs||{})){
+    if(v==null || v===false) continue;
+    if(k==="class") el.className = v; else if(k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if(k==="html") el.innerHTML = v; else el.setAttribute(k, v===true?"":v);
+  }
+  for(const k of kids.flat()){ if(k==null||k===false) continue; el.append(k.nodeType?k:document.createTextNode(String(k))); }
+  return el;
+}
+let toastT;
+function toast(msg){ let t=$("#toastEl"); if(!t){ t=h("div",{class:"toast",id:"toastEl",role:"status"}); document.body.append(t); } t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,2800); }
+async function copyText(text, area){
+  try{ await navigator.clipboard.writeText(text); toast("Kopierat"); }
+  catch(e){ if(area){ area.focus(); area.select(); } toast("Markera texten och kopiera manuellt"); }
+}
+const ICONS = {
+  idag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><path d="M12 7v6l-4 7M12 13l4 7M7 10h10"/></svg>',
+  vecka:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  tester:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20h16M7 16V9M12 16V5M17 16v-4"/></svg>',
+  logg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h14v16H5zM9 9h6M9 13h6M9 17h3"/></svg>',
+  kunskap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/></svg>'
+};
+const TABS = [["idag","Idag"],["vecka","Vecka"],["tester","Tester"],["logg","Historik"],["kunskap","Kunskap"]];
+function renderTabs(){
+  const nav = $("#tabs"); nav.innerHTML = "";
+  for(const [k,label] of TABS){
+    const b = h("button",{"aria-current":S.tab===k?"page":null, onclick:()=>go(k)}); b.innerHTML = ICONS[k]; b.append(label); nav.append(b);
+  }
+}
+function go(tab){ S.tab = tab; if(tab!=="idag") S.view=null; render(); window.scrollTo(0,0); }
+function stepDots(n, max){ return h("span",{class:"steps","aria-label":`Steg ${n} av ${max}`}, ...Array.from({length:max},(_,i)=>h("i",{class:i<n?"on":""}))); }
+function phaseLine(){ const st=S.state; const w = Math.floor(daysBetween(st.startDate,today())/7)+1; return `${PHASES[st.phase].name} · vecka ${w}`; }
+
+/* ---------------- Vyer ---------------- */
+function render(){
+  renderTabs();
+  const v = $("#view"); v.innerHTML = "";
+  if(!S.state){ v.append(h("div",{class:"card"},h("p",{class:"muted"},"Laddar ditt program…"))); return; }
+  $("#phaseLine").textContent = phaseLine();
+  if(!S.state.onboarded){ v.append(viewOnboard()); return; }
+  if(S.tab==="settings"){ v.append(viewSettings()); return; }
+  ({idag:viewToday, vecka:viewWeek, tester:viewTests, logg:viewLog, kunskap:viewKnow})[S.tab](v);
+}
+
+function viewOnboard(){
+  const box = h("div",{class:"stack"});
+  const floorSel = {v:false};
+  box.append(
+    h("h2",{},"Välkommen. Så här fungerar programmet"),
+    h("div",{class:"card prose"},
+      h("p",{},"Du får ett pass om dagen, 15–45 minuter, med övningar som går att göra hemma med stol, vägg, handduk, kvast och några vattenflaskor."),
+      h("ul",{},
+        h("li",{},"Måndag, onsdag och fredag: styrka i fullt rörelseomfång plus rörlighet. Fredag har extra golffokus."),
+        h("li",{},"Tisdag och torsdag: rena rörlighetspass. Lördag: lätt pass och promenad. Söndag: vila."),
+        h("li",{},"Efter varje övning väljer du Lätt, Lagom eller Tungt. Tre gånger Lätt i rad och övningen går upp ett steg. Gör det ont går den ned."),
+        h("li",{},"Var fjärde vecka gör du några enkla tester så att du ser att du blir rörligare."))),
+    h("div",{class:"banner warn"},
+      h("h3",{},"Innan du börjar"),
+      h("p",{class:"small"},"Prata med din läkare eller vårdcentral först om du har hjärt- eller kärlsjukdom, högt blodtryck som inte är behandlat, diabetes, nyligen opererats, eller får bröstsmärta, yrsel eller ovanlig andnöd vid ansträngning. Avbryt en övning vid skarp, stickande eller strålande smärta.")),
+    h("div",{class:"card stack"},
+      h("h3",{},"Kan du ta dig ned till golvet och upp igen på ett säkert sätt?"),
+      h("p",{class:"small muted"},"Om inte gör du allt stående, sittande eller i sängen tills vidare. Du kan ändra det i inställningarna när det blir lättare."),
+      (()=>{ const r=h("div",{class:"row"}); const mk=(val,txt)=>{ const b=h("button",{class:"chip","aria-pressed":String(floorSel.v===val),onclick:()=>{floorSel.v=val; r.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));}},txt); return b; }; r.append(mk(true,"Ja, utan problem"), mk(false,"Nej, inte ännu")); return r; })()),
+    h("button",{class:"primary",onclick:()=>{ S.state.settings.floor = floorSel.v; S.state.onboarded = true; S.state.startDate = today(); S.state.phaseStart = today(); store.saveState(); S.tab="tester"; render(); toast("Börja med ett starttest, så ser du dina framsteg"); }},"Starta programmet")
+  );
+  return box;
+}
+
+function plannedFor(dateStr){ return WEEK[parseISO(dateStr).getDay()]; }
+function doneOn(dateStr){ return sessionLogs().filter(l=>l.date===dateStr); }
+
+function viewToday(v){
+  if(S.session){ v.append(viewSession()); return; }
+  const st = S.state, t = today(), plan = plannedFor(t), done = doneOn(t);
+  // banners
+  if(st.updateFlag) v.append(updateBanner());
+  if(store.mode!=="db" && S.logs.length && (!st.lastBackup || daysBetween(st.lastBackup, t) >= 7)) v.append(backupBanner());
+  const lastTest = S.tests[0];
+  if(!lastTest || daysBetween(lastTest.date, t) >= 28){
+    v.append(h("div",{class:"banner sun"}, h("h3",{},lastTest?"Dags för månadstest":"Gör ditt starttest"), h("p",{class:"small"},"Tar 10 minuter och visar hur din rörlighet förändras."), h("div",{}, h("button",{onclick:()=>go("tester")},"Till testerna"))));
+  }
+  // dagens pass
+  const card = h("div",{class:"card stack"});
+  card.append(h("span",{class:"eyebrow"}, `Idag · ${fmtDate(t)}`));
+  if(plan){
+    const T = TEMPLATES[plan];
+    card.append(h("h2",{},T.name), h("p",{class:"muted"},T.desc),
+      h("div",{class:"row"}, h("span",{class:"tag"},`ca ${estMinutes(plan, st.phase, st.steps, st.settings.floor)} min`), h("span",{class:"tag"},`${T.items.length} övningar`), plan==="G"?h("span",{class:"tag golf"},"Golffokus"):null),
+      done.length ? h("p",{class:"ok"},"Klart för idag ✓") : null);
+    const form = h("div",{class:"stack"}, h("p",{class:"small",style:"font-weight:600"},"Hur är formen idag?"));
+    const r = h("div",{class:"row"});
+    r.append(h("button",{class:"primary",onclick:()=>startSession(plan)},done.length?"Gör passet igen":"Bra, starta passet"),
+             h("button",{onclick:()=>startSession("L")},"Trött eller öm: lätt pass"));
+    form.append(r); card.append(form);
+  } else {
+    card.append(h("h2",{},"Vilodag"), h("p",{class:"muted"},"Kroppen anpassar sig under vilan. En promenad eller det lätta passet går bra om du vill röra på dig."),
+      h("div",{class:"row"}, h("button",{onclick:()=>startSession("L")},"Lätt pass, ca 15 min")));
+  }
+  v.append(card);
+  // golf + promenad
+  const extra = h("div",{class:"stack"});
+  extra.append(h("div",{class:"card stack"}, h("h3",{},"Ska du spela golf?"), h("p",{class:"small muted"},"Cirka 10 min dynamisk uppvärmning före rundan."), h("div",{},h("button",{onclick:()=>startSession("P")},"Före golfrundan"))));
+  if(st.settings.walk) extra.append(walkCard());
+  v.append(extra);
+  // notiser
+  if(st.notices.length){
+    v.append(h("div",{class:"sec-label"},h("h3",{},"Senaste förändringarna"), h("span",{class:"small muted"},"av programmet")));
+    st.notices.slice(0,4).forEach(n=>v.append(h("div",{class:`banner ${n.kind||"acc"}`}, h("p",{class:"small"}, h("b",{},fmtDate(n.date)+": "), n.text))));
+  }
+  // vecka
+  const wk = weekDays();
+  const doneCount = wk.filter(d=>doneOn(d).length).length;
+  v.append(h("div",{class:"card kv"}, h("div",{class:"stat"},h("span",{class:"eyebrow"},"Pass denna vecka"),h("b",{},`${doneCount} / 6`)),
+    h("div",{class:"stat"},h("span",{class:"eyebrow"},"Promenad i veckan"),h("b",{},`${walkMinutesWeek(wk)} min`)),
+    h("div",{class:"stat"},h("span",{class:"eyebrow"},"Fas"),h("b",{},String(st.phase+1)))));
+}
+const WALK_TAGS = [["interval","Intervaller"],["hill","Backe/trappor"],["golf","Golfrunda"]];
+const WALK_GOALS = [["interval",2,"Intervallpromenader"],["hill",1,"Backe eller trappor"]];
+function intervalCfg(){ return [{n:4,fast:60,easy:120},{n:5,fast:90,easy:120},{n:6,fast:120,easy:120}][S.state.phase]; }
+function intervalMinutes(c){ return Math.round((300 + c.n*(c.fast+c.easy) + 180)/60); }
+function fmtSec(s){ return s>=60 ? `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}` : `${s} s`; }
+function runIntervals(){
+  const c = intervalCfg(), plan = [{l:"Uppvärmning i vanligt tempo", t:300, gap:true}];
+  for(let i=1;i<=c.n;i++){ plan.push({l:`Intervall ${i} av ${c.n}: gå så fort du kan`, t:c.fast}); plan.push({l:"Lugnt tempo, hämta andan", t:c.easy, gap:true}); }
+  plan.push({l:"Nedvarvning i lugnt tempo", t:180, gap:true});
+  wake(true);
+  playPlan(plan, ()=>{ wake(false); const d = walkDraft(); d.tags.interval = true; d.minutes = intervalMinutes(c); render(); toast("Intervallerna är klara. Fyll i minuterna och spara promenaden."); });
+}
+function walkDraft(){ return S.walkDraft || (S.walkDraft = {tags:{}, minutes:30}); }
+function walkCard(){
+  const d = walkDraft(), wk = weekDays(), c = intervalCfg();
+  const walks = S.logs.filter(l=>l.type==="walk" && wk.includes(l.date));
+  const goals = h("div",{class:"stack",style:"gap:4px"}, ...WALK_GOALS.map(([k,n,l])=>{ const got = walks.filter(w=>w.tags && w.tags[k]).length;
+    return h("div",{class:"kv small"}, h("span",{},l), h("span",{class:got>=n?"ok":"muted"}, `${Math.min(got,n)} / ${n}${got>=n?" ✓":""}`)); }));
+  const tagRow = h("div",{class:"row"});
+  WALK_TAGS.forEach(([k,l])=>{ const b = h("button",{class:"chip","aria-pressed":String(!!d.tags[k]),onclick:()=>{ d.tags[k]=!d.tags[k]; b.setAttribute("aria-pressed",String(d.tags[k])); }},l); tagRow.append(b); });
+  const inp = h("input",{type:"number",id:"walkMin",min:"5",max:"300",step:"5",value:String(d.minutes),"aria-label":"Minuter promenad",style:"width:90px"});
+  inp.addEventListener("input",()=>d.minutes=Number(inp.value));
+  return h("div",{class:"card stack"},
+    h("h3",{},"Promenad"),
+    h("p",{class:"small muted"},"Utanför 45-minuterstaket. Du går redan mer än 150 min i veckan, så nu är målet att höja tempot ibland. Veckans mål:"),
+    goals,
+    h("details",{}, h("summary",{},"Så går du en intervallpromenad"),
+      h("p",{class:"small"}, `Värm upp i 5 min i vanligt tempo. Gå sedan så fort du kan utan att springa i ${fmtSec(c.fast)}. Du ska bara orka säga korta meningar, ungefär 7 av 10 i ansträngning. Gå lugnt i 2 min och upprepa ${c.n} gånger. Varva ned i 3 min, totalt cirka ${intervalMinutes(c)} min. Intervallerna blir längre när du går upp en fas. Lägger du de snabba delarna i en uppförsbacke eller trappa bockar du av båda målen på samma promenad.`)),
+    h("div",{}, h("button",{onclick:runIntervals}, `Starta intervallguide, ${intervalMinutes(c)} min`)),
+    h("p",{class:"small",style:"font-weight:600"},"Logga promenad (välj det som stämmer)"),
+    tagRow,
+    h("div",{class:"row"}, inp, h("span",{class:"small"},"min"), h("button",{class:"primary",onclick:async()=>{ const m=Number(inp.value); if(!(m>0)){ toast("Fyll i antal minuter"); return; }
+      const e={type:"walk",date:today(),ts:Date.now(),minutes:m,tags:{...d.tags}}; S.logs.unshift(e); S.walkDraft=null; await store.add("logs",e); toast(`${m} min promenad sparad`); render(); }},"Spara")));
+}
+function weekDays(){ const d=new Date(); const dow=(d.getDay()+6)%7; const mon=new Date(d.getFullYear(),d.getMonth(),d.getDate()-dow); return Array.from({length:7},(_,i)=>isoDate(new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+i))); }
+function walkMinutesWeek(days){ return S.logs.filter(l=>l.type==="walk" && days.includes(l.date)).reduce((a,l)=>a+(l.minutes||0),0); }
+
+function updateBanner(){
+  const area = h("textarea",{readonly:true,id:"summaryTxt"}, progressSummary());
+  return h("div",{class:"banner sun"},
+    h("h3",{},"Dags att uppdatera appen"),
+    h("p",{class:"small"},"Du har klarat de flesta övningarna på högsta steget, eller kört fas 3 i över 8 veckor. För fortsatt utveckling behövs nya övningar. Kopiera sammanfattningen och be Claude bygga nästa nivå av Smidigare."),
+    h("details",{}, h("summary",{},"Visa sammanfattning"), area),
+    h("div",{class:"row"}, h("button",{class:"primary",onclick:()=>copyText(progressSummary(), area)},"Kopiera sammanfattning")));
+}
+function progressSummary(){
+  const st=S.state; const lines=[];
+  lines.push(`Smidigare – uppdatera mitt program. Start ${st.startDate}, nu ${PHASES[st.phase].name}, vecka ${Math.floor(daysBetween(st.startDate,today())/7)+1}.`);
+  lines.push(`Pass loggade: ${sessionLogs().length}. Följsamhet senaste 14 dagar: ${Math.round(adherence14()*100)} %. Golvet ok: ${st.settings.floor?"ja":"nej"}.`);
+  lines.push("Övningar (steg/max):");
+  USED.map(id=>[id,EX[id]]).forEach(([id,ex])=>lines.push(`- ${ex.name}: steg ${st.steps[id].step}/${ex.steps.length}`));
+  if(S.tests.length){ const f=S.tests[S.tests.length-1], l=S.tests[0]; lines.push("Tester (första → senaste):"); TESTS.forEach(t=>{ const a=testVal(f,t), b=testVal(l,t); if(a!=null||b!=null) lines.push(`- ${t.name}: ${a??"–"} → ${b??"–"} ${t.unit}`); }); }
+  const pains = {}; sessionLogs().slice(0,40).forEach(l=>l.items.forEach(i=>{ if(i.pain) pains[i.id]=(pains[i.id]||0)+1; }));
+  if(Object.keys(pains).length) lines.push("Övningar som gjort ont: "+Object.entries(pains).map(([id,n])=>`${EX[id].name} (${n})`).join(", "));
+  return lines.join("\n");
+}
+
+/* ---------- Pass ---------- */
+function startSession(tpl){
+  const T = TEMPLATES[tpl], st = S.state;
+  S.session = { template:tpl, start:Date.now(), stiffBefore:null, stiffAfter:null, rpe:null, notes:"",
+    items: T.items.map(id=>({ id, step: Math.min(st.steps[id].step, maxStep(EX[id], st.settings.floor)), done:false, rating:null, pain:false })) };
+  wake(true); S.tab="idag"; render(); window.scrollTo(0,0);
+}
+const CAT_LABEL = {warm:"Uppvärmning", mob:"Rörlighet i rörelse", str:"Styrka i fullt rörelseomfång", bal:"Balans", stretch:"Stretch (håll stilla, andas lugnt)", breath:"Nedvarvning"};
+function viewSession(){
+  const ses = S.session, T = TEMPLATES[ses.template], st = S.state;
+  const box = h("div",{class:"stack"});
+  box.append(h("div",{class:"row",style:"justify-content:space-between"}, h("div",{}, h("span",{class:"eyebrow"},`${PHASES[st.phase].name}`), h("h2",{},T.name)), h("button",{class:"ghost",onclick:()=>{ stopTimer(); S.session=null; wake(false); render(); }},"Avbryt")));
+  box.append(h("div",{class:"card stack"}, h("p",{class:"small",style:"font-weight:600"},"Hur stel känner du dig just nu? (1 = smidig, 5 = mycket stel)"), scale5(ses.stiffBefore, v=>{ ses.stiffBefore=v; })));
+  let lastCat = null;
+  ses.items.forEach((it, idx)=>{
+    const ex = EX[it.id];
+    if(ex.cat !== lastCat){ lastCat = ex.cat; box.append(h("div",{class:"sec-label"}, h("h3",{},CAT_LABEL[ex.cat]))); }
+    box.append(exCard(it, idx));
+  });
+  const ta = h("textarea",{id:"sesNotes",placeholder:"Anteckning (valfritt): hur kändes det, något som störde?"}); ta.value = ses.notes; ta.addEventListener("input",()=>ses.notes=ta.value);
+  box.append(h("div",{class:"card stack"},
+    h("p",{class:"small",style:"font-weight:600"},"Hur stel känner du dig nu, efter passet?"), scale5(ses.stiffAfter, v=>{ ses.stiffAfter=v; }),
+    h("p",{class:"small",style:"font-weight:600"},"Hur ansträngande var passet? (0 = vila, 10 = max)"), rpeScale(ses),
+    ta,
+    h("button",{class:"primary",onclick:finishSession},"Spara passet")));
+  return box;
+}
+function scale5(val, set){
+  const r = h("div",{class:"row"});
+  for(let i=1;i<=5;i++){ const b=h("button",{class:"chip","aria-pressed":String(val===i),onclick:()=>{ set(i); r.querySelectorAll("button").forEach((x,j)=>x.setAttribute("aria-pressed",String(j+1===i))); }},String(i)); r.append(b); }
+  return r;
+}
+function rpeScale(ses){
+  const r = h("div",{class:"row"});
+  for(let i=0;i<=10;i++){ const b=h("button",{class:"chip","aria-pressed":String(ses.rpe===i),style:"min-width:40px",onclick:()=>{ ses.rpe=i; r.querySelectorAll("button").forEach((x,j)=>x.setAttribute("aria-pressed",String(j===i))); }},String(i)); r.append(b); }
+  return r;
+}
+function exCard(it, idx){
+  const ex = EX[it.id], st = S.state, max = ex.steps.length, allowed = maxStep(ex, st.settings.floor);
+  const step = ex.steps[it.step-1], T = TEMPLATES[S.session.template];
+  const d = doseFor(it.id, it.step-1, st.phase, T.light);
+  const card = h("div",{class:"card ex"+(it.done?" done":""), id:"ex-"+idx});
+  card.append(h("div",{class:"ex-head"},
+    h("div",{}, h("h3",{},ex.name), h("p",{class:"small muted"}, step.n)),
+    h("div",{style:"text-align:right"}, h("div",{class:"dose"}, d.text), stepDots(it.step, max))));
+  const tags = h("div",{class:"row"}, h("span",{class:"tag"},ex.area), ex.golf?h("span",{class:"tag golf"},"Golf"):null, allowed<max && it.step===allowed ? h("span",{class:"small muted"},"Nästa steg kräver golvet") : null);
+  card.append(tags);
+  card.append(h("details",{open: it.step===1 && !it.done ? true : null}, h("summary",{},"Så gör du"), h("p",{class:"small"}, step.how)));
+  if(d.hold){ card.append(h("div",{}, h("button",{onclick:()=>runTimer(ex.name, d.hold, d.sets, ex.cat==="stretch"?d.sides:ex.sides)}, `Starta timer ${d.hold} s`))); }
+  if(ex.cat === "breath"){ card.append(h("div",{}, h("button",{onclick:()=>runBreath()},"Starta andningsguide 2 min"))); }
+  const r = h("div",{class:"row"});
+  const rate = (val)=>{ it.rating = val; it.done = true; refreshCard(idx); };
+  if(!T.light && ex.cat!=="breath"){
+    [["easy","Lätt"],["ok","Lagom"],["hard","Tungt"]].forEach(([v,l])=>r.append(h("button",{class:"chip","aria-pressed":String(it.rating===v),onclick:()=>rate(v)},l)));
+    r.append(h("button",{class:"chip bad","aria-pressed":String(it.pain),onclick:()=>{ it.pain=!it.pain; it.done=true; refreshCard(idx); }},"Gjorde ont"));
+  } else {
+    r.append(h("button",{class:"chip","aria-pressed":String(it.done),onclick:()=>{ it.done=!it.done; it.rating=it.done?"ok":null; refreshCard(idx); }},"Klar"));
+  }
+  card.append(r);
+  return card;
+}
+function refreshCard(idx){ const old = $("#ex-"+idx); if(old) old.replaceWith(exCard(S.session.items[idx], idx)); }
+async function finishSession(){
+  const ses = S.session; stopTimer();
+  const done = ses.items.filter(i=>i.done).length;
+  if(done === 0){ toast("Markera minst en övning som gjord"); return; }
+  const entry = { type:"session", date:today(), ts:Date.now(), template:ses.template, phase:S.state.phase,
+    minutes: Math.max(1, Math.round((Date.now()-ses.start)/60000)), stiffBefore:ses.stiffBefore, stiffAfter:ses.stiffAfter, rpe:ses.rpe, notes:ses.notes,
+    items: ses.items.map(i=>({id:i.id, step:i.step, done:i.done, rating:i.rating, pain:i.pain})) };
+  const before = S.state.notices.length ? S.state.notices[0] : null;
+  S.logs.unshift(entry);
+  applyProgression(entry);
+  await store.add("logs", entry); await store.saveState();
+  S.session = null; wake(false); render(); window.scrollTo(0,0);
+  const fresh = S.state.notices[0];
+  toast(fresh && fresh!==before ? "Passet sparat. Programmet har justerats." : "Passet sparat. Bra jobbat!");
+}
+
+/* ---------- Timer ---------- */
+let timerInt = null, audioCtx = null, wakeLock = null;
+function beep(freq=880, ms=180){
+  try{ audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.value=freq; o.connect(g); g.connect(audioCtx.destination); g.gain.setValueAtTime(.15,audioCtx.currentTime); o.start(); o.stop(audioCtx.currentTime+ms/1000); }catch(e){}
+}
+async function wake(on){ try{ if(on && navigator.wakeLock){ wakeLock = await navigator.wakeLock.request("screen"); } else if(!on && wakeLock){ await wakeLock.release(); wakeLock=null; } }catch(e){} }
+function runTimer(name, hold, sets, sides){
+  stopTimer(); beep(660,80);
+  const plan = [];
+  for(let s=1;s<=sets;s++){ if(sides){ plan.push({l:`${name} · set ${s} · vänster`, t:hold}); plan.push({l:"Byt sida", t:5, gap:true}); plan.push({l:`${name} · set ${s} · höger`, t:hold}); } else plan.push({l:`${name} · set ${s}`, t:hold}); if(s<sets) plan.push({l:"Vila, andas", t:10, gap:true}); }
+  playPlan(plan, ()=>{ toast("Klart! Välj Lätt, Lagom eller Tungt."); });
+}
+function runBreath(){
+  stopTimer(); const plan=[]; for(let i=0;i<12;i++){ plan.push({l:"Andas in genom näsan", t:4}); plan.push({l:"Andas ut genom munnen", t:6, gap:true}); }
+  playPlan(plan, ()=>toast("Bra. Passet är snart klart."));
+}
+function playPlan(plan, onEnd){
+  const bar = $("#timer"); let i=0, left=plan[0].t;
+  const draw = ()=>{ bar.innerHTML=""; bar.append(h("div",{style:"min-width:0"}, h("div",{class:"small"}, plan[i].l), h("div",{class:"big"}, fmtSec(left))), h("button",{onclick:stopTimer},"Stoppa")); bar.hidden=false; };
+  draw();
+  timerInt = setInterval(()=>{
+    left--; if(left<=3 && left>0 && !plan[i].gap) beep(520,60);
+    if(left<=0){ i++; if(i>=plan.length){ beep(988,400); stopTimer(); onEnd&&onEnd(); return; } beep(plan[i].gap?440:880,160); left=plan[i].t; }
+    draw();
+  },1000);
+}
+function stopTimer(){ clearInterval(timerInt); timerInt=null; const b=$("#timer"); if(b) b.hidden=true; }
+
+/* ---------- Vecka ---------- */
+function viewWeek(v){
+  const st = S.state, days = weekDays(), t = today();
+  v.append(h("h2",{},"Veckoschema"), h("p",{class:"muted small"},`${PHASES[st.phase].name} (${PHASES[st.phase].weeks}). ${PHASES[st.phase].note}`));
+  const list = h("div",{class:"week"});
+  days.forEach(ds=>{
+    const p = plannedFor(ds), dn = doneOn(ds), d = parseISO(ds);
+    list.append(h("div",{class:"day"+(ds===t?" today":"")},
+      h("div",{}, h("div",{class:"d"},DAYNAMES[d.getDay()]), h("div",{class:"small muted"}, String(d.getDate()))),
+      h("div",{}, h("div",{style:"font-weight:600"}, p?TEMPLATES[p].name:"Vila"), h("div",{class:"small muted"}, p?`ca ${estMinutes(p,st.phase,st.steps,st.settings.floor)} min`:"Promenad om du vill")),
+      dn.length ? h("span",{class:"ok"},"✓") : (p && ds>=t ? h("button",{class:"chip",onclick:()=>startSession(p)},"Starta") : h("span",{class:"small muted"},ds<t?"–":""))));
+  });
+  v.append(list);
+  v.append(h("div",{class:"sec-label"},h("h3",{},"Alla pass")));
+  Object.entries(TEMPLATES).forEach(([k,T])=>{
+    const det = h("details",{}, h("summary",{},"Visa övningar"), h("ul",{class:"small",style:"margin:0;padding-left:1.2em"}, ...T.items.map(id=>{ const s=Math.min(st.steps[id].step, maxStep(EX[id],st.settings.floor)); return h("li",{}, `${EX[id].name}: ${EX[id].steps[s-1].n} (${doseFor(id,s-1,st.phase,T.light).text})`); })));
+    v.append(h("div",{class:"card stack"}, h("div",{class:"ex-head"}, h("div",{}, h("h3",{},T.name), h("p",{class:"small muted"},T.desc)), h("span",{class:"dose"},`${estMinutes(k,st.phase,st.steps,st.settings.floor)} min`)), det, h("div",{}, h("button",{onclick:()=>startSession(k)},"Gör det här passet nu"))));
+  });
+  v.append(h("div",{class:"sec-label"},h("h3",{},"Dina övningssteg")));
+  const tb = h("table",{}, h("thead",{}, h("tr",{}, h("th",{},"Övning"), h("th",{},"Steg"), h("th",{},"Nu"))));
+  const body = h("tbody");
+  USED.map(id=>[id,EX[id]]).forEach(([id,ex])=>{ const s=st.steps[id].step; body.append(h("tr",{}, h("td",{},ex.name), h("td",{}, stepDots(s, ex.steps.length)), h("td",{class:"small"}, ex.steps[Math.min(s,ex.steps.length)-1].n))); });
+  tb.append(body); v.append(h("div",{class:"tscroll card",style:"padding:6px"}, tb));
+}
+
+/* ---------- Tester ---------- */
+const TESTS = [
+  {k:"sitReach", name:"Sitt och räck", unit:"cm", better:"up", how:"Sitt på stolskanten, ena benet rakt med hälen i golvet och tårna uppåt. Händerna ovanpå varandra, sträck fram mot tårna och håll 2 s. Mät avståndet mellan långfingrar och tår: minus om du inte når, plus om du når förbi. Bästa av två försök.", src:"Senior Fitness Test"},
+  {k:"backR", name:"Rygg-klia, höger arm upp", unit:"cm", better:"up", how:"Höger hand över axeln nedför ryggen, vänster hand underifrån uppför ryggen. Mät avståndet mellan långfingrarna: minus om de inte möts, plus om de överlappar.", src:"Senior Fitness Test"},
+  {k:"backL", name:"Rygg-klia, vänster arm upp", unit:"cm", better:"up", how:"Samma sak med vänster hand ovanifrån.", src:"Senior Fitness Test"},
+  {k:"chair", name:"Uppresningar på 30 s", unit:"st", better:"up", how:"Stol utan armstöd mot väggen, armarna i kors. Räkna hur många hela uppresningar du gör på 30 s.", src:"Senior Fitness Test"},
+  {k:"rotR", name:"Rotation sittande, höger", unit:"grad", better:"up", select:[["0","Under 45°"],["1","Ungefär 45°"],["2","Mer än 45°"]], how:"Sitt på en stol, fötterna ihop, kvasten framför bröstet i armkrokarna. Vrid utan att höfterna följer med. Vid 45° pekar kvasten diagonalt, mot ett hörn i rummet om du sitter vänd mot en vägg.", src:"Golfscreening (TPI-inspirerad)"},
+  {k:"rotL", name:"Rotation sittande, vänster", unit:"grad", better:"up", select:[["0","Under 45°"],["1","Ungefär 45°"],["2","Mer än 45°"]], how:"Samma åt vänster.", src:"Golfscreening"},
+  {k:"balR", name:"Enbensstående, höger", unit:"s", better:"up", how:"Stå på höger ben utan stöd, nära en stol. Mät sekunder tills du måste sätta ned foten eller ta stöd. Max 30 s.", src:"Balanstest"},
+  {k:"balL", name:"Enbensstående, vänster", unit:"s", better:"up", how:"Samma på vänster ben.", src:"Balanstest"},
+  {k:"srt", name:"Sitta ned och resa sig från golvet", unit:"p", better:"up", optional:true, how:"Endast om du kan ta dig ned säkert. Börja med 10 poäng. Sätt dig på golvet och res dig. Dra 1 poäng för varje stöd (hand, knä, underarm, sida av benet) i varje riktning.", src:"Sitting-rising test (Araújo)"},
+  {k:"weight", name:"Vikt", unit:"kg", better:"down", optional:true, how:"Valfritt. Väg dig på morgonen.", src:""},
+  {k:"waist", name:"Midjemått", unit:"cm", better:"down", optional:true, how:"Valfritt. Mät i höjd med naveln efter en lugn utandning.", src:""}
+];
+function testVal(rec, t){ const v = rec && rec.values ? rec.values[t.k] : null; return (v===""||v==null)?null:Number(v); }
+function viewTests(v){
+  v.append(h("h2",{},"Tester"), h("p",{class:"muted small"},"Gör testerna var fjärde vecka, på ungefär samma tid på dagen och efter samma uppvärmning (2 min marsch). Fyll bara i det du har gjort."));
+  const vals = {};
+  const form = h("div",{class:"stack"});
+  TESTS.forEach(t=>{
+    let input;
+    if(t.select){ input = h("select",{id:"t-"+t.k}, h("option",{value:""},"–"), ...t.select.map(([val,l])=>h("option",{value:val},l))); }
+    else input = h("input",{type:"number",id:"t-"+t.k,step:"0.5",inputmode:"decimal",style:"width:120px"});
+    input.addEventListener("input",()=>vals[t.k]=input.value);
+    form.append(h("div",{class:"card stack"},
+      h("div",{class:"ex-head"}, h("div",{}, h("h3",{},t.name), t.src?h("p",{class:"ref"},t.src):null), h("span",{class:"tag"},t.optional?"Valfritt":t.unit)),
+      h("details",{}, h("summary",{},"Så testar du"), h("p",{class:"small"},t.how)),
+      h("div",{class:"row"}, input, h("span",{class:"small muted"}, t.select?"":t.unit))));
+  });
+  form.append(h("button",{class:"primary",onclick:async()=>{
+    const values = {}; let any=false; TESTS.forEach(t=>{ const el=$("#t-"+t.k); if(el && el.value!==""){ values[t.k]=Number(el.value); any=true; } });
+    if(!any){ toast("Fyll i minst ett test"); return; }
+    const e = {type:"test", date:today(), ts:Date.now(), values}; S.tests.unshift(e); await store.add("tests", e); toast("Testet sparat"); render(); window.scrollTo(0,0);
+  }},"Spara testresultat"));
+  if(S.tests.length) v.append(testResults());
+  v.append(h("div",{class:"sec-label"},h("h3",{},"Nytt test")), form);
+}
+function testResults(){
+  const box = h("div",{class:"stack"});
+  box.append(h("div",{class:"sec-label"},h("h3",{},"Dina resultat"), h("span",{class:"small muted"},`${S.tests.length} tillfällen`)));
+  const asc = [...S.tests].reverse();
+  const tb = h("table",{}, h("thead",{}, h("tr",{}, h("th",{},"Test"), h("th",{},"Första"), h("th",{},"Senaste"), h("th",{},"Förändring"), h("th",{},"Kurva"))));
+  const body = h("tbody");
+  TESTS.forEach(t=>{
+    const series = asc.map(r=>testVal(r,t)).filter(x=>x!=null); if(!series.length) return;
+    const a=series[0], b=series[series.length-1], diff=b-a, good = t.better==="up"?diff>0:diff<0;
+    const fmt = x => t.select ? t.select[x]?.[1] ?? x : x;
+    body.append(h("tr",{}, h("td",{},t.name), h("td",{},String(fmt(a))), h("td",{},String(fmt(b))),
+      h("td",{style:`color:${diff===0?"var(--muted)":good?"var(--good)":"var(--warn)"};font-weight:700`}, diff===0?"±0":(diff>0?"+":"")+(Math.round(diff*10)/10)+(t.select?"":" "+t.unit)),
+      h("td",{}, spark(series))));
+  });
+  tb.append(body); box.append(h("div",{class:"card tscroll",style:"padding:6px"}, tb));
+  return box;
+}
+function spark(arr){
+  const w=90,hh=26,p=3; const mn=Math.min(...arr), mx=Math.max(...arr), rng=(mx-mn)||1;
+  const pts = arr.map((v,i)=>[p+(arr.length===1?(w-2*p)/2:i*(w-2*p)/(arr.length-1)), hh-p-(v-mn)/rng*(hh-2*p)]);
+  const svg = document.createElementNS("http://www.w3.org/2000/svg","svg"); svg.setAttribute("width",w); svg.setAttribute("height",hh); svg.setAttribute("viewBox",`0 0 ${w} ${hh}`);
+  svg.innerHTML = `<polyline points="${pts.map(q=>q.join(",")).join(" ")}" fill="none" stroke="var(--accent)" stroke-width="2"/><circle cx="${pts[pts.length-1][0]}" cy="${pts[pts.length-1][1]}" r="3" fill="var(--accent)"/>`;
+  return svg;
+}
+
+/* ---------- Historik ---------- */
+function viewLog(v){
+  v.append(h("h2",{},"Historik"));
+  const sl = sessionLogs();
+  // veckostaplar senaste 8 veckor
+  const weeks = []; const now = new Date(); const dow=(now.getDay()+6)%7;
+  for(let w=7; w>=0; w--){ const mon = new Date(now.getFullYear(),now.getMonth(),now.getDate()-dow-7*w); const days = Array.from({length:7},(_,i)=>isoDate(new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+i))); weeks.push({label:`v${isoWeek(mon)}`, n:new Set(sl.filter(l=>days.includes(l.date)).map(l=>l.date)).size, walk:walkMinutesWeek(days)}); }
+  v.append(h("div",{class:"card stack"}, h("h3",{},"Träningsdagar per vecka"), h("p",{class:"small muted"},"Målet är 5–6 dagar. Streckad linje = 5."), weekChart(weeks)));
+  // stelhet
+  const withStiff = sl.filter(l=>l.stiffBefore && l.stiffAfter).slice(0,20);
+  if(withStiff.length){
+    const b = avg(withStiff.map(l=>l.stiffBefore)), a = avg(withStiff.map(l=>l.stiffAfter));
+    v.append(h("div",{class:"card kv"}, h("div",{class:"stat"},h("span",{class:"eyebrow"},"Stelhet före"),h("b",{},b.toFixed(1))), h("div",{class:"stat"},h("span",{class:"eyebrow"},"Stelhet efter"),h("b",{},a.toFixed(1))), h("div",{class:"stat"},h("span",{class:"eyebrow"},"Pass totalt"),h("b",{},String(sl.length)))));
+  }
+  v.append(h("div",{class:"sec-label"},h("h3",{},"Senaste passen")));
+  if(!S.logs.length) v.append(h("div",{class:"card"}, h("p",{class:"muted"},"Inga pass ännu. När du sparar ditt första pass dyker det upp här med datum, tid och hur det kändes.")));
+  S.logs.slice(0,40).forEach(l=>{
+    if(l.type==="walk"){ v.append(h("div",{class:"card kv"}, h("span",{},`${fmtDate(l.date)} · Promenad${l.tags?WALK_TAGS.filter(([k])=>l.tags[k]).map(([,t])=>" · "+t).join(""):""}`), h("span",{class:"dose"},`${l.minutes} min`))); return; }
+    const done = l.items.filter(i=>i.done).length, pain = l.items.filter(i=>i.pain).map(i=>EX[i.id].name);
+    v.append(h("div",{class:"card stack"},
+      h("div",{class:"kv"}, h("b",{},`${fmtDate(l.date)} · ${TEMPLATES[l.template]?.name||l.template}`), h("span",{class:"dose"},`${l.minutes} min`)),
+      h("p",{class:"small muted"}, `${done}/${l.items.length} övningar · Ansträngning ${l.rpe??"–"}/10 · Stelhet ${l.stiffBefore??"–"} → ${l.stiffAfter??"–"}`),
+      pain.length ? h("p",{class:"small",style:"color:var(--warn)"}, "Ont: "+pain.join(", ")) : null,
+      l.notes ? h("p",{class:"small"}, l.notes) : null));
+  });
+}
+function avg(a){ return a.reduce((x,y)=>x+y,0)/a.length; }
+function isoWeek(d){ const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())); const day=t.getUTCDay()||7; t.setUTCDate(t.getUTCDate()+4-day); const y=new Date(Date.UTC(t.getUTCFullYear(),0,1)); return Math.ceil(((t-y)/86400000+1)/7); }
+function weekChart(weeks){
+  const W=320,H=140,pl=22,pb=22,pt=8; const max=7; const bw=(W-pl-8)/weeks.length;
+  const y = v => pt+(H-pt-pb)*(1-v/max);
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:520px" role="img" aria-label="Träningsdagar per vecka">`;
+  [0,5,7].forEach(g=>{ s+=`<line x1="${pl}" x2="${W-4}" y1="${y(g)}" y2="${y(g)}" stroke="var(--line)" ${g===5?'stroke-dasharray="4 3" stroke="var(--muted)"':''}/><text x="${pl-6}" y="${y(g)+4}" font-size="10" text-anchor="end">${g}</text>`; });
+  weeks.forEach((w,i)=>{ const x=pl+4+i*bw; const hgt=(H-pt-pb)*w.n/max; s+=`<rect x="${x}" y="${y(w.n)}" width="${bw-8}" height="${hgt}" rx="3" fill="${i===weeks.length-1?"var(--sun)":"var(--accent)"}"/><text x="${x+(bw-8)/2}" y="${H-6}" font-size="10" text-anchor="middle">${w.label}</text>`; if(w.n) s+=`<text x="${x+(bw-8)/2}" y="${y(w.n)-3}" font-size="10" text-anchor="middle">${w.n}</text>`; });
+  s += "</svg>"; const d = h("div",{class:"tscroll"}); d.innerHTML = s; return d;
+}
+
+/* ---------- Kunskap ---------- */
+function viewKnow(v){
+  const sec = (title, ...kids) => h("div",{class:"card prose"}, h("h3",{},title), ...kids);
+  v.append(h("h2",{},"Så blir en stel kropp smidigare"),
+    sec("Varför programmet ser ut som det gör",
+      h("ul",{},
+        h("li",{},"Rörlighet tränas bäst ofta. Stretch 5–6 dagar i veckan ger mer än 2–3 dagar, och den totala tiden per muskel är det viktigaste: sikta på minst 5 minuter per muskelgrupp och vecka."),
+        h("li",{},"Håll stretchen 30–60 sekunder. Äldre och stela personer svarar bättre på längre håll, därför ökar tiden från 30 till 60 s över faserna."),
+        h("li",{},"Styrketräning genom hela rörelseomfånget ökar rörligheten ungefär lika mycket som stretching, och ger dessutom styrka, bättre blodsocker och skonar lederna. Därför tre styrkedagar i veckan."),
+        h("li",{},"Balansträning 2–3 gånger i veckan minskar fallrisken och ger en stabilare golfsving."),
+        h("li",{},"Progressionen går långsamt och styrs av hur det känns. Det ger färre skador och fler som håller i träningen.")),
+      h("p",{class:"ref"},"Källor bl.a. ACSM:s riktlinjer för rörlighetsträning, WHO:s riktlinjer för fysisk aktivitet 2020, Thomas m.fl. 2018 (dos–respons för stretch), Feland m.fl. 2001 (60 s håll hos äldre), Afonso m.fl. 2021 (styrka jämfört med stretch).")),
+    sec("Smärtregeln",
+      h("p",{},"Lite obehag och sträckkänsla är okej. Använd en skala 0–10:"),
+      h("ul",{}, h("li",{},"0–3: fortsätt."), h("li",{},"4–5: minska rörelsen eller gå ned ett steg."), h("li",{},"Över 5, eller smärta som sitter kvar nästa morgon: hoppa över övningen och markera Gjorde ont.")),
+      h("p",{},"Avbryt direkt vid bröstsmärta, yrsel, ovanlig andnöd, domningar eller skarp, strålande smärta. Håll aldrig andan i styrkeövningarna: andas ut när du tar i.")),
+    sec("Golf: det som gör mest skillnad",
+      h("ul",{},
+        h("li",{},"Rotation i bröstryggen (Bålrotation, Öppna boken, Bröstöppnare) ger en längre baksving utan att ländryggen tar stryk."),
+        h("li",{},"Höftens inåt- och utåtrotation (Höftrotation, Figur 4) gör att höfterna kan vrida i svingen."),
+        h("li",{},"Höftgångjärnet ger en stabil adressposition."),
+        h("li",{},"Före rundan: kör passet Före golfrundan, cirka 10 min. Lång statisk stretch (över 60 s per muskel) precis före spel kan tillfälligt minska kraften, så spara den till efteråt."),
+        h("li",{},"Efter rundan: 5 min lätt stretch för höftböjare, säte och bröst."))),
+    sec("Vikten och rörligheten",
+      h("ul",{},
+        h("li",{},"Magen kan stoppa framåtböjningar. Ställ fötterna bredare och fäll från höften, så får du plats."),
+        h("li",{},"Varje kilo du går ned minskar belastningen på knäna med ungefär 3–4 kilo per steg. Rörligheten blir ofta märkbart bättre redan vid 5 % viktnedgång."),
+        h("li",{},"Har du redan 150 minuter promenad i veckan ger tempot mer än fler minuter. Två intervallpromenader och en promenad i backe eller trappor i veckan förbättrar konditionen och blodsockret mer än samma tid i jämnt tempo."),
+        h("li",{},"Protein vid varje måltid hjälper musklerna att svara på styrketräningen."))),
+    sec("Små vanor som hjälper",
+      h("ul",{},
+        h("li",{},"Bryt stillasittande var 30–60 minut: res dig, gör 5 uppresningar eller några armcirklar."),
+        h("li",{},"Värme mjukar upp: en varm dusch före passet gör det lättare att komma i gång på morgonen."),
+        h("li",{},"Sömn på 7–8 timmar påverkar både stelhet, smärtkänslighet och aptit."),
+        h("li",{},"Samma tid varje dag gör det till en vana. Koppla passet till något du redan gör, till exempel efter morgonkaffet."),
+        h("li",{},"Räkna med 6–8 veckor innan rörligheten märks tydligt, och 3–6 månader för stor skillnad. Testerna visar framstegen innan du känner dem."))));
+}
+
+/* ---------- Inställningar ---------- */
+function viewSettings(){
+  const st = S.state, box = h("div",{class:"stack"});
+  box.append(h("div",{class:"row",style:"justify-content:space-between"}, h("h2",{},"Inställningar"), h("button",{class:"ghost",onclick:()=>go("idag")},"Stäng")));
+  const floor = h("input",{type:"checkbox",id:"setFloor",checked:st.settings.floor||null,style:"min-height:0;width:22px;height:22px"});
+  const walk = h("input",{type:"checkbox",id:"setWalk",checked:st.settings.walk||null,style:"min-height:0;width:22px;height:22px"});
+  floor.addEventListener("change",()=>{ st.settings.floor=floor.checked; st.updateFlag = needsUpdate(); store.saveState(); toast(floor.checked?"Golvövningar är på":"Golvövningar är av"); });
+  walk.addEventListener("change",()=>{ st.settings.walk=walk.checked; store.saveState(); });
+  box.append(h("div",{class:"card stack"},
+    h("label",{style:"flex-direction:row;align-items:center;gap:10px"}, floor, "Jag kan ta mig ned och upp från golvet säkert"),
+    h("label",{style:"flex-direction:row;align-items:center;gap:10px"}, walk, "Visa promenadloggning (utöver 45 min)")));
+  const phaseSel = h("select",{id:"setPhase"}, ...PHASES.map((p,i)=>h("option",{value:String(i),selected:i===st.phase||null},p.name)));
+  phaseSel.addEventListener("change",()=>{ st.phase=Number(phaseSel.value); st.phaseStart=today(); store.saveState(); toast("Fasen ändrad"); });
+  box.append(h("div",{class:"card stack"}, h("h3",{},"Fas"), h("p",{class:"small muted"},`Fasen höjs automatiskt efter 4 veckor om du tränat minst 3 dagar i veckan. Följsamhet senaste 14 dagarna: ${Math.round(adherence14()*100)} %.`), phaseSel));
+  // lagring
+  box.append(h("div",{class:"card stack"}, h("h3",{},"Dina data"),
+    h("p",{class:"small muted"}, store.mode==="db" ? "Sparas privat på ditt Claude-konto, så de finns kvar på alla enheter där du är inloggad." : "Sparas bara i den här webbläsaren på den här enheten. Spara en säkerhetskopia till Google Drive varje vecka, och innan du byter telefon. Appen påminner dig."),
+    h("details",{}, h("summary",{},"Sammanfattning till Claude"), h("p",{class:"small"},"Kopiera och klistra in i en chatt med Claude när du vill få programmet uppdaterat."), (()=>{ const a=h("textarea",{readonly:true,id:"sumTxt2"}, progressSummary()); return h("div",{class:"stack"}, a, h("div",{},h("button",{onclick:()=>copyText(a.value,a)},"Kopiera"))); })())));
+  box.append(backupCard());
+  // nollställ
+  const confirmRow = h("div",{class:"row",hidden:true}, h("span",{class:"small"},"Allt raderas. Säker?"), h("button",{onclick:async()=>{ for(const l of S.logs) await store.remove("logs",l); for(const t of S.tests) await store.remove("tests",t); S.logs=[]; S.tests=[]; S.state=newState(); await store.saveState(); go("idag"); }},"Ja, radera allt"), h("button",{onclick:()=>confirmRow.hidden=true},"Avbryt"));
+  box.append(h("div",{class:"card stack"}, h("h3",{},"Börja om"), h("div",{}, h("button",{onclick:()=>confirmRow.hidden=false},"Radera all data")), confirmRow));
+  return box;
+}
+function backupJSON(){ return JSON.stringify({app:"smidigare", format:1, exported:new Date().toISOString(), state:S.state, logs:S.logs, tests:S.tests}); }
+function backupName(){ return `smidigare-sakerhetskopia-${today()}.txt`; }
+function markBackup(){ S.state.lastBackup = today(); store.saveState(); render(); }
+async function saveBackup(){
+  const json = backupJSON(), name = backupName();
+  // 1. Androids delningsmeny (välj Drive). Fungerar i Chrome och i den installerade appen.
+  try{
+    const file = new File([json], name, {type:"text/plain"});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:"Smidigare säkerhetskopia"});
+      markBackup(); toast("Säkerhetskopian är skickad"); return;
+    }
+  }catch(e){ if(e && e.name === "AbortError"){ toast("Avbrutet, ingen kopia sparad"); return; } }
+  // 2. Inuti claude.ai: spara filen via Claude.
+  try{
+    const dl = window.claude && window.claude.use ? await window.claude.use("downloads") : null;
+    if(dl){ await dl.save({filename:name, data:json}); markBackup(); toast("Filen är sparad. Ladda upp den till Drive."); return; }
+  }catch(e){ if(e && e.code === "declined"){ toast("Avbrutet, ingen kopia sparad"); return; } }
+  // 3. Vanlig nedladdning i webbläsaren.
+  try{
+    const url = URL.createObjectURL(new Blob([json], {type:"text/plain"}));
+    const a = h("a",{href:url, download:name}); document.body.append(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 5000);
+    markBackup(); toast("Filen ligger i Nedladdningar. Ladda upp den till Drive."); return;
+  }catch(e){}
+  toast("Kunde inte spara filen. Använd Kopiera som text längre ned.");
+}
+async function importBackup(d){
+  if(!d || !d.state || !d.state.steps) throw new Error("ogiltig");
+  const lastBackup = S.state.lastBackup;
+  S.state = migrate(d.state); S.state.lastBackup = lastBackup || d.state.lastBackup;
+  const newLogs = (d.logs||[]).filter(l=>!S.logs.some(x=>x.ts===l.ts));
+  const newTests = (d.tests||[]).filter(l=>!S.tests.some(x=>x.ts===l.ts));
+  for(const l of newLogs){ delete l._id; S.logs.push(l); await store.add("logs",l); }
+  for(const t of newTests){ delete t._id; S.tests.push(t); await store.add("tests",t); }
+  S.logs.sort((a,b)=>b.ts-a.ts); S.tests.sort((a,b)=>b.ts-a.ts);
+  await store.saveState();
+  return newLogs.length + newTests.length;
+}
+function backupCard(){
+  const last = S.state.lastBackup;
+  const fileIn = h("input",{type:"file",id:"bkFile",accept:".txt,.json,text/plain,application/json",hidden:true});
+  fileIn.addEventListener("change",()=>{
+    const f = fileIn.files && fileIn.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = async()=>{ try{ const n = await importBackup(JSON.parse(r.result)); toast(`Återställt. ${n} nya poster lades till.`); render(); }catch(e){ toast("Filen är ingen giltig säkerhetskopia från Smidigare"); } };
+    r.readAsText(f);
+  });
+  return h("div",{class:"card stack"},
+    h("h3",{},"Säkerhetskopia till Google Drive"),
+    h("p",{class:"small"}, "Tryck på Spara till Google Drive. I menyn som öppnas väljer du ", h("b",{},"Drive"), ", sedan mapp, och trycker Spara. Varje kopia innehåller allt: program, steg, pass, promenader och tester."),
+    h("p",{class:"small muted"}, last ? `Senaste säkerhetskopia: ${fmtDate(last)} (${daysBetween(last,today())} dagar sedan).` : "Ingen säkerhetskopia gjord ännu."),
+    h("div",{class:"row"}, h("button",{class:"primary",onclick:saveBackup},"Spara till Google Drive"), h("button",{onclick:()=>fileIn.click()},"Återställ från fil"), fileIn),
+    h("p",{class:"small muted"},"Återställ: välj filen i Drive i filväljaren (tryck på menyn ☰ och välj Drive). Poster som redan finns läggs inte till två gånger."),
+    h("details",{}, h("summary",{},"Kopiera som text (reserv)"), backupBox()));
+}
+function backupBanner(){
+  return h("div",{class:"banner acc"}, h("h3",{},"Dags att säkerhetskopiera"),
+    h("p",{class:"small"}, S.state.lastBackup ? `Senaste kopian gjordes ${fmtDate(S.state.lastBackup)}. Spara en ny till Google Drive så att inget försvinner om telefonen byts eller rensas.` : "Dina data finns bara i den här telefonen. Spara en kopia till Google Drive så att inget försvinner."),
+    h("div",{}, h("button",{class:"primary",onclick:saveBackup},"Spara till Google Drive")));
+}
+function backupBox(){
+  const out = h("textarea",{id:"bkOut",readonly:true}); out.value = backupJSON();
+  const inp = h("textarea",{id:"bkIn",placeholder:"Klistra in en säkerhetskopia här för att återställa"});
+  return h("div",{class:"stack"}, out, h("div",{}, h("button",{onclick:()=>copyText(out.value,out)},"Kopiera säkerhetskopia")), inp,
+    h("div",{}, h("button",{onclick:async()=>{ try{ const n = await importBackup(JSON.parse(inp.value)); toast(`Återställt. ${n} nya poster lades till.`); render(); }catch(e){ toast("Texten är ingen giltig säkerhetskopia"); } }},"Återställ från text")));
+}
+
+/* ---------- Start ---------- */
+$("#settingsBtn").addEventListener("click",()=>{ if(S.state && S.state.onboarded){ S.tab="settings"; render(); window.scrollTo(0,0); } });
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible" && S.session) wake(true); });
+(async function boot(){
+  renderTabs();
+  await store.init();
+  const d = await store.load();
+  S.state = d.state ? migrate(d.state) : newState();
+  S.logs = d.logs.sort((a,b)=>b.ts-a.ts); S.tests = d.tests.sort((a,b)=>b.ts-a.ts);
+  if(S.state.onboarded){ checkPhase(); }
+  render();
+})();
+</script>
+
+<script>
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+</script>
+</body>
+</html>

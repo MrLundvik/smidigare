@@ -359,6 +359,13 @@ const store = {
     }
     this.local();
   },
+  async update(coll, entry){
+    if(this.mode === "db" && entry._id){
+      try{ const {_id, ...data} = entry; await this.stateRef().collection(coll).doc(_id).set(data); }
+      catch(e){ console.warn(e); toast("Kunde inte spara i molnet, sparat lokalt."); }
+    }
+    this.local();
+  },
   async remove(coll, entry){
     if(this.mode === "db" && entry._id){ try{ await this.stateRef().collection(coll).doc(entry._id).delete(); }catch(e){ console.warn(e); } }
     this.local();
@@ -366,7 +373,7 @@ const store = {
 };
 
 /* ---------------- Tillstånd ---------------- */
-const S = { state:null, logs:[], tests:[], tab:"idag", session:null, view:null };
+const S = { state:null, logs:[], tests:[], tab:"idag", session:null, view:null, editTest:null };
 const today = () => isoDate(new Date());
 function isoDate(d){ const z=n=>String(n).padStart(2,"0"); return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`; }
 function parseISO(s){ const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); }
@@ -739,9 +746,9 @@ function viewWeek(v){
 
 /* ---------- Tester ---------- */
 const TESTS = [
-  {k:"sitReach", name:"Sitt och räck", unit:"cm", better:"up", how:"Sitt på stolskanten, ena benet rakt med hälen i golvet och tårna uppåt. Händerna ovanpå varandra, sträck fram mot tårna och håll 2 s. Mät avståndet mellan långfingrar och tår: minus om du inte når, plus om du når förbi. Bästa av två försök.", src:"Senior Fitness Test"},
-  {k:"backR", name:"Rygg-klia, höger arm upp", unit:"cm", better:"up", how:"Höger hand över axeln nedför ryggen, vänster hand underifrån uppför ryggen. Mät avståndet mellan långfingrarna: minus om de inte möts, plus om de överlappar.", src:"Senior Fitness Test"},
-  {k:"backL", name:"Rygg-klia, vänster arm upp", unit:"cm", better:"up", how:"Samma sak med vänster hand ovanifrån.", src:"Senior Fitness Test"},
+  {k:"sitReach", neg:true, name:"Sitt och räck", unit:"cm", better:"up", how:"Sitt på stolskanten, ena benet rakt med hälen i golvet och tårna uppåt. Händerna ovanpå varandra, sträck fram mot tårna och håll 2 s. Mät avståndet mellan långfingrar och tår: minus om du inte når, plus om du når förbi. Bästa av två försök.", src:"Senior Fitness Test"},
+  {k:"backR", neg:true, name:"Rygg-klia, höger arm upp", unit:"cm", better:"up", how:"Höger hand över axeln nedför ryggen, vänster hand underifrån uppför ryggen. Mät avståndet mellan långfingrarna: minus om de inte möts, plus om de överlappar.", src:"Senior Fitness Test"},
+  {k:"backL", neg:true, name:"Rygg-klia, vänster arm upp", unit:"cm", better:"up", how:"Samma sak med vänster hand ovanifrån.", src:"Senior Fitness Test"},
   {k:"chair", name:"Uppresningar på 30 s", unit:"st", better:"up", how:"Stol utan armstöd mot väggen, armarna i kors. Räkna hur många hela uppresningar du gör på 30 s.", src:"Senior Fitness Test"},
   {k:"rotR", name:"Rotation sittande, höger", unit:"grad", better:"up", select:[["0","Under 45°"],["1","Ungefär 45°"],["2","Mer än 45°"]], how:"Sitt på en stol, fötterna ihop, kvasten framför bröstet i armkrokarna. Vrid utan att höfterna följer med. Vid 45° pekar kvasten diagonalt, mot ett hörn i rummet om du sitter vänd mot en vägg.", src:"Golfscreening (TPI-inspirerad)"},
   {k:"rotL", name:"Rotation sittande, vänster", unit:"grad", better:"up", select:[["0","Under 45°"],["1","Ungefär 45°"],["2","Mer än 45°"]], how:"Samma åt vänster.", src:"Golfscreening"},
@@ -752,27 +759,40 @@ const TESTS = [
   {k:"waist", name:"Midjemått", unit:"cm", better:"down", optional:true, how:"Valfritt. Mät i höjd med naveln efter en lugn utandning.", src:""}
 ];
 function testVal(rec, t){ const v = rec && rec.values ? rec.values[t.k] : null; return (v===""||v==null)?null:Number(v); }
+function fmtTestVal(t, x){ return t.select ? (t.select[x]?.[1] ?? x) : `${String(x).replace("-","−")} ${t.unit}`; }
 function viewTests(v){
+  const edit = S.editTest ? S.tests.find(x=>x.ts===S.editTest) : null;
+  if(!edit) S.editTest = null;
   v.append(h("h2",{},"Tester"), h("p",{class:"muted small"},"Gör testerna var fjärde vecka, på ungefär samma tid på dagen och efter samma uppvärmning (2 min marsch). Fyll bara i det du har gjort."));
-  const vals = {};
   const form = h("div",{class:"stack"});
   TESTS.forEach(t=>{
+    const cur = edit ? testVal(edit,t) : null;
     let input;
-    if(t.select){ input = h("select",{id:"t-"+t.k}, h("option",{value:""},"–"), ...t.select.map(([val,l])=>h("option",{value:val},l))); }
-    else input = h("input",{type:"number",id:"t-"+t.k,step:"0.5",inputmode:"decimal",style:"width:120px"});
-    input.addEventListener("input",()=>vals[t.k]=input.value);
+    if(t.select){ input = h("select",{id:"t-"+t.k}, h("option",{value:""},"–"), ...t.select.map(([val,l])=>h("option",{value:val, selected: cur!=null && String(cur)===val},l))); }
+    else { input = h("input",{type:"number",id:"t-"+t.k,step:"0.5",inputmode:"decimal",style:"width:120px"}); if(cur!=null) input.value = String(cur); }
+    const sign = t.neg ? h("button",{class:"chip",type:"button","aria-label":"Byt mellan plus och minus",onclick:()=>{ if(input.value===""){ toast("Skriv värdet först och tryck sedan ±"); return; } input.value = String(-Number(input.value)); }},"±") : null;
     form.append(h("div",{class:"card stack"},
       h("div",{class:"ex-head"}, h("div",{}, h("h3",{},t.name), t.src?h("p",{class:"ref"},t.src):null), h("span",{class:"tag"},t.optional?"Valfritt":t.unit)),
       h("details",{}, h("summary",{},"Så testar du"), h("p",{class:"small"},t.how)),
-      h("div",{class:"row"}, input, h("span",{class:"small muted"}, t.select?"":t.unit))));
+      h("div",{class:"row"}, input, sign, h("span",{class:"small muted"}, t.select?"":t.unit)),
+      t.neg ? h("p",{class:"small muted"},"Minus om du inte når. Tryck på ± för att byta tecken.") : null));
   });
-  form.append(h("button",{class:"primary",onclick:async()=>{
+  const save = async()=>{
     const values = {}; let any=false; TESTS.forEach(t=>{ const el=$("#t-"+t.k); if(el && el.value!==""){ values[t.k]=Number(el.value); any=true; } });
     if(!any){ toast("Fyll i minst ett test"); return; }
-    const e = {type:"test", date:today(), ts:Date.now(), values}; S.tests.unshift(e); await store.add("tests", e); toast("Testet sparat"); render(); window.scrollTo(0,0);
-  }},"Spara testresultat"));
+    if(edit){ edit.values = values; edit.edited = Date.now(); await store.update("tests", edit); S.editTest = null; toast("Testet är ändrat"); }
+    else { const e = {type:"test", date:today(), ts:Date.now(), values}; S.tests.unshift(e); await store.add("tests", e); toast("Testet sparat"); }
+    render(); window.scrollTo(0,0);
+  };
+  if(edit){
+    const confirmRow = h("div",{class:"row",hidden:true}, h("span",{class:"small"},"Testet raderas. Säker?"),
+      h("button",{onclick:async()=>{ S.tests = S.tests.filter(x=>x!==edit); await store.remove("tests", edit); S.editTest = null; toast("Testet raderat"); render(); window.scrollTo(0,0); }},"Ja, radera"),
+      h("button",{onclick:()=>confirmRow.hidden=true},"Avbryt"));
+    form.append(h("div",{class:"row"}, h("button",{class:"primary",onclick:save},"Spara ändringarna"), h("button",{onclick:()=>{ S.editTest = null; render(); window.scrollTo(0,0); }},"Avbryt")),
+      h("div",{}, h("button",{class:"link",onclick:()=>confirmRow.hidden=false},"Radera testet")), confirmRow);
+  } else form.append(h("button",{class:"primary",onclick:save},"Spara testresultat"));
   if(S.tests.length) v.append(testResults());
-  v.append(h("div",{class:"sec-label"},h("h3",{},"Nytt test")), form);
+  v.append(h("div",{class:"sec-label",id:"testForm"},h("h3",{},edit?`Ändra test från ${fmtDate(edit.date)}`:"Nytt test")), form);
 }
 function testResults(){
   const box = h("div",{class:"stack"});
@@ -789,6 +809,14 @@ function testResults(){
       h("td",{}, spark(series))));
   });
   tb.append(body); box.append(h("div",{class:"card tscroll",style:"padding:6px"}, tb));
+  const list = h("div",{class:"card stack"}, h("h3",{},"Testtillfällen"), h("p",{class:"small muted"},"Har du skrivit fel, till exempel glömt ett minustecken? Tryck på Ändra."));
+  S.tests.forEach(r=>{
+    const parts = TESTS.filter(t=>testVal(r,t)!=null).map(t=>`${t.name} ${fmtTestVal(t, testVal(r,t))}`);
+    list.append(h("div",{class:"kv",style:"border-top:1px solid var(--line);padding-top:8px;align-items:center"},
+      h("div",{style:"flex:1;min-width:0"}, h("b",{},fmtDate(r.date)), h("p",{class:"small muted"}, parts.join(" · "))),
+      h("button",{onclick:()=>{ S.editTest = r.ts; render(); const f = $("#testForm"); if(f) f.scrollIntoView({behavior:"smooth",block:"start"}); }},"Ändra")));
+  });
+  box.append(list);
   return box;
 }
 function spark(arr){

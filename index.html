@@ -141,127 +141,127 @@ const STRETCH_SETS = 2;
 // cat: warm | mob | str | bal | stretch | breath. Steg markerade floor:true kräver att du kan gå ned på golvet.
 const EX = {
  W1:{name:"Marsch på stället", cat:"warm", area:"Hela kroppen", steps:[
-   {n:"Marsch med stöd", dose:"2 min", t:120, how:"Stå bakom en stol och håll lätt i ryggstödet. Marschera i lugnt tempo, lyft knäna så högt det känns bekvämt och låt armarna pendla."},
-   {n:"Marsch med armsving", dose:"2 min", t:120, how:"Utan stöd om balansen tillåter. Lyft knäna mot höfthöjd och sväng armarna aktivt. Du ska bli lite varm, inte andfådd."},
-   {n:"Marsch och sidosteg", dose:"3 min", t:180, how:"1 min marsch, 1 min sidosteg fram och tillbaka, 1 min marsch med högre knän."}]},
+   {n:"Marsch med stöd", img:"standing march holding chair exercise", dose:"2 min", t:120, how:"Stå bakom en stol och håll lätt i ryggstödet. Marschera i lugnt tempo, lyft knäna så högt det känns bekvämt och låt armarna pendla."},
+   {n:"Marsch med armsving", img:"marching in place arm swing exercise", dose:"2 min", t:120, how:"Utan stöd om balansen tillåter. Lyft knäna mot höfthöjd och sväng armarna aktivt. Du ska bli lite varm, inte andfådd."},
+   {n:"Marsch och sidosteg", img:"side step exercise standing", dose:"3 min", t:180, how:"1 min marsch, 1 min sidosteg fram och tillbaka, 1 min marsch med högre knän."}]},
  W2:{name:"Axlar och armar", cat:"warm", area:"Axlar", steps:[
-   {n:"Axelrullningar och armcirklar", dose:"10 per riktning", t:90, how:"Rulla axlarna bakåt 10 gånger och framåt 10 gånger. Gör sedan armcirklar som börjar små och blir större."},
-   {n:"Armcirklar och kramar", dose:"10 + 10", t:90, how:"Stora armcirklar, sedan öppna armarna brett och korsa dem framför bröstet som en kram, omväxlande vilken arm som ligger överst."},
-   {n:"Armsving med kvast", dose:"10 långsamma", t:90, how:"Håll en kvast eller pinne med brett grepp. För den långsamt upp över huvudet och så långt bakåt det går utan smärta, och tillbaka."}]},
+   {n:"Axelrullningar och armcirklar", img:"shoulder rolls arm circles exercise", dose:"10 per riktning", t:90, how:"Rulla axlarna bakåt 10 gånger och framåt 10 gånger. Gör sedan armcirklar som börjar små och blir större."},
+   {n:"Armcirklar och kramar", img:"arm circles self hug warm up exercise", dose:"10 + 10", t:90, how:"Stora armcirklar, sedan öppna armarna brett och korsa dem framför bröstet som en kram, omväxlande vilken arm som ligger överst."},
+   {n:"Armsving med kvast", img:"broomstick shoulder pass through exercise", dose:"10 långsamma", t:90, how:"Håll en kvast eller pinne med brett grepp. För den långsamt upp över huvudet och så långt bakåt det går utan smärta, och tillbaka."}]},
  W3:{name:"Höftcirklar", cat:"warm", area:"Höfter", steps:[
-   {n:"Höftcirklar med stöd", dose:"8 per riktning", t:90, how:"Händerna på stolsryggen, fötterna höftbrett. Rita stora, långsamma cirklar med bäckenet."},
-   {n:"Knäcirklar", dose:"6 per riktning och ben", t:120, how:"Håll i stolen, lyft ena knät framför dig och rita cirklar med knät. Det smörjer höftleden."},
-   {n:"Grinden", dose:"6 per ben och riktning", t:120, how:"Lyft knät framför dig, för det ut åt sidan och ned, som att kliva över en grind. Sedan baklänges."}]},
+   {n:"Höftcirklar med stöd", img:"standing hip circles exercise", dose:"8 per riktning", t:90, how:"Händerna på stolsryggen, fötterna höftbrett. Rita stora, långsamma cirklar med bäckenet."},
+   {n:"Knäcirklar", img:"standing knee circles hip mobility holding chair", dose:"6 per riktning och ben", t:120, how:"Håll i stolen, lyft ena knät framför dig och rita cirklar med knät. Det smörjer höftleden."},
+   {n:"Grinden", img:"open the gate hip exercise standing", dose:"6 per ben och riktning", t:120, how:"Lyft knät framför dig, för det ut åt sidan och ned, som att kliva över en grind. Sedan baklänges."}]},
  W4:{name:"Katt och ko", cat:"warm", area:"Rygg", steps:[
-   {n:"Sittande katt och ko", dose:"8 långsamma", t:90, how:"Sitt på stolskanten med händerna på knäna. Andas in och skjut fram bröstet. Andas ut, runda ryggen och dra in hakan."},
-   {n:"Stående katt och ko", dose:"8 långsamma", t:90, how:"Stå med fötterna brett, mjuka knän och händerna på låren. Svanka och runda ryggen omväxlande, i takt med andningen."},
-   {n:"Katt och ko på alla fyra", dose:"10 långsamma", t:90, floor:true, how:"På alla fyra med en kudde under knäna. Händerna under axlarna, knäna under höfterna. Rör dig kota för kota."}]},
+   {n:"Sittande katt och ko", img:"seated cat cow stretch chair", dose:"8 långsamma", t:90, how:"Sitt på stolskanten med händerna på knäna. Andas in och skjut fram bröstet. Andas ut, runda ryggen och dra in hakan."},
+   {n:"Stående katt och ko", img:"standing cat cow stretch", dose:"8 långsamma", t:90, how:"Stå med fötterna brett, mjuka knän och händerna på låren. Svanka och runda ryggen omväxlande, i takt med andningen."},
+   {n:"Katt och ko på alla fyra", img:"cat cow stretch", dose:"10 långsamma", t:90, floor:true, how:"På alla fyra med en kudde under knäna. Händerna under axlarna, knäna under höfterna. Rör dig kota för kota."}]},
 
  M1:{name:"Bålrotation", cat:"mob", golf:true, sides:true, area:"Bröstrygg", steps:[
-   {n:"Sittande rotation, armarna i kors", dose:"8 per sida", how:"Sitt långt fram på stolen, fötterna stadigt i golvet, armarna i kors över bröstet. Vrid överkroppen åt ena hållet, håll 2 s, och tillbaka. Knäna står still."},
-   {n:"Sittande rotation med kvast", dose:"8 per sida", how:"Lägg en kvast över skuldrorna och håll den med händerna. Vrid och andas ut i ändläget. Rörelsen ska komma mellan skulderbladen, inte från ländryggen."},
-   {n:"Rotation i golfposition", dose:"8 per sida", how:"Stå som vid bollen: mjuka knän, fäll fram från höften, kvasten över bröstet. Vrid axlarna så långt du kan utan att höfterna följer med. Håll 3 s."}]},
+   {n:"Sittande rotation, armarna i kors", img:"seated trunk rotation arms crossed", dose:"8 per sida", how:"Sitt långt fram på stolen, fötterna stadigt i golvet, armarna i kors över bröstet. Vrid överkroppen åt ena hållet, håll 2 s, och tillbaka. Knäna står still."},
+   {n:"Sittande rotation med kvast", img:"seated trunk rotation stick on shoulders", dose:"8 per sida", how:"Lägg en kvast över skuldrorna och håll den med händerna. Vrid och andas ut i ändläget. Rörelsen ska komma mellan skulderbladen, inte från ländryggen."},
+   {n:"Rotation i golfposition", img:"golf posture thoracic rotation club across chest", dose:"8 per sida", how:"Stå som vid bollen: mjuka knän, fäll fram från höften, kvasten över bröstet. Vrid axlarna så långt du kan utan att höfterna följer med. Håll 3 s."}]},
  M2:{name:"Öppna boken", cat:"mob", golf:true, sides:true, area:"Bröstrygg och axel", steps:[
-   {n:"Öppna boken mot vägg", dose:"8 per sida", how:"Stå med sidan mot en vägg, armarna raka framåt i axelhöjd. För den yttre armen i en båge bakåt mot väggen och följ handen med blicken. Bara så långt det känns bekvämt."},
-   {n:"Öppna boken i sängen", dose:"8 per sida", how:"Ligg på sidan i sängen med knäna böjda och en kudde under huvudet, armarna raka framför dig. Öppna den övre armen i en båge bakåt, knäna ligger kvar ihop."},
-   {n:"Öppna boken på golvet med paus", dose:"8 per sida", floor:true, how:"Som i sängen men på golvet, med en hoprullad handduk mellan knäna. Håll 3 s i ändläget och andas ut."}]},
+   {n:"Öppna boken mot vägg", img:"standing open book stretch against wall", dose:"8 per sida", how:"Stå med sidan mot en vägg, armarna raka framåt i axelhöjd. För den yttre armen i en båge bakåt mot väggen och följ handen med blicken. Bara så långt det känns bekvämt."},
+   {n:"Öppna boken i sängen", img:"side lying open book stretch", dose:"8 per sida", how:"Ligg på sidan i sängen med knäna böjda och en kudde under huvudet, armarna raka framför dig. Öppna den övre armen i en båge bakåt, knäna ligger kvar ihop."},
+   {n:"Öppna boken på golvet med paus", img:"open book thoracic rotation towel between knees", dose:"8 per sida", floor:true, how:"Som i sängen men på golvet, med en hoprullad handduk mellan knäna. Håll 3 s i ändläget och andas ut."}]},
  M3:{name:"Höftgångjärn", cat:"mob", golf:true, area:"Höft och baksida lår", steps:[
-   {n:"Rumpan mot väggen", dose:"10", how:"Stå med ryggen en fotlängd från en vägg. Skjut rumpan bakåt mot väggen med rak rygg och mjuka knän tills den nuddar. Tryck dig tillbaka med sätet."},
-   {n:"Höftgångjärn med kvast", dose:"10", how:"Håll kvasten längs ryggen så att den har kontakt med bakhuvud, mellan skulderbladen och korsryggen. Fäll framåt från höften utan att tappa kontakten. Det är golfens adressposition."},
-   {n:"Enbens gångjärn med stöd", dose:"6 per ben", how:"En hand på stolen. Fäll framåt på ett ben medan det andra sträcks rakt bakåt, som att plocka upp en golfboll. Höften pekar mot golvet hela tiden."}]},
+   {n:"Rumpan mot väggen", img:"hip hinge wall tap", dose:"10", how:"Stå med ryggen en fotlängd från en vägg. Skjut rumpan bakåt mot väggen med rak rygg och mjuka knän tills den nuddar. Tryck dig tillbaka med sätet."},
+   {n:"Höftgångjärn med kvast", img:"hip hinge with dowel", dose:"10", how:"Håll kvasten längs ryggen så att den har kontakt med bakhuvud, mellan skulderbladen och korsryggen. Fäll framåt från höften utan att tappa kontakten. Det är golfens adressposition."},
+   {n:"Enbens gångjärn med stöd", img:"single leg hip hinge holding chair", dose:"6 per ben", how:"En hand på stolen. Fäll framåt på ett ben medan det andra sträcks rakt bakåt, som att plocka upp en golfboll. Höften pekar mot golvet hela tiden."}]},
  M4:{name:"Benpendel", cat:"mob", sides:true, area:"Höfter", steps:[
-   {n:"Benpendel framåt och bakåt", dose:"10 per ben", how:"Håll i en stol med en hand. Låt benet pendla avslappnat framåt och bakåt. Öka utslaget lite i taget."},
-   {n:"Benpendel framåt och i sidled", dose:"10 + 10 per ben", how:"Först framåt–bakåt, sedan med båda händerna på stolen: pendla benet i sidled framför kroppen."},
-   {n:"Benpendel och knäkram", dose:"10 + 5 per ben", how:"Benpendel som steg 2, avsluta med att dra knät mot bröstet med händerna och hålla 2 s, 5 gånger per sida."}]},
+   {n:"Benpendel framåt och bakåt", img:"leg swings front to back", dose:"10 per ben", how:"Håll i en stol med en hand. Låt benet pendla avslappnat framåt och bakåt. Öka utslaget lite i taget."},
+   {n:"Benpendel framåt och i sidled", img:"lateral leg swings", dose:"10 + 10 per ben", how:"Först framåt–bakåt, sedan med båda händerna på stolen: pendla benet i sidled framför kroppen."},
+   {n:"Benpendel och knäkram", img:"standing knee hug stretch", dose:"10 + 5 per ben", how:"Benpendel som steg 2, avsluta med att dra knät mot bröstet med händerna och hålla 2 s, 5 gånger per sida."}]},
  M5:{name:"Bröstöppnare", cat:"mob", area:"Bröstrygg", steps:[
-   {n:"Bakåtlutning över stolsryggen", dose:"8", how:"Sitt med ryggen mot ett stadigt ryggstöd, händerna knäppta bakom nacken. Luta överkroppen bakåt över ryggstödets kant så att armbågarna pekar uppåt. Andas in i ändläget."},
-   {n:"Bröstöppnare mot bänk", dose:"8 × 3 s", how:"Stå framför köksbänken med armbågarna på kanten och händerna ihop. Skjut rumpan bakåt och låt bröstet sjunka mot golvet. Håll 3 s."},
-   {n:"Handduksrulle på golvet", dose:"8 × 3 s", floor:true, how:"Ligg på rygg med en hårt rullad handduk tvärs under bröstryggen och händerna bakom huvudet. Luta dig bakåt över rullen. Flytta rullen ett snäpp och upprepa."}]},
+   {n:"Bakåtlutning över stolsryggen", img:"seated thoracic extension over chair back", dose:"8", how:"Sitt med ryggen mot ett stadigt ryggstöd, händerna knäppta bakom nacken. Luta överkroppen bakåt över ryggstödets kant så att armbågarna pekar uppåt. Andas in i ändläget."},
+   {n:"Bröstöppnare mot bänk", img:"thoracic extension stretch elbows on counter", dose:"8 × 3 s", how:"Stå framför köksbänken med armbågarna på kanten och händerna ihop. Skjut rumpan bakåt och låt bröstet sjunka mot golvet. Håll 3 s."},
+   {n:"Handduksrulle på golvet", img:"thoracic extension towel roll", dose:"8 × 3 s", floor:true, how:"Ligg på rygg med en hårt rullad handduk tvärs under bröstryggen och händerna bakom huvudet. Luta dig bakåt över rullen. Flytta rullen ett snäpp och upprepa."}]},
  M6:{name:"Knä mot vägg", cat:"mob", sides:true, area:"Fotled", steps:[
-   {n:"Knä mot vägg", dose:"10 per sida", how:"Stå vänd mot väggen med ena foten en handsbredd från den, händerna mot väggen. För knät fram mot väggen utan att hälen lyfter."},
-   {n:"Knä mot vägg, längre ut", dose:"10 per sida", how:"Flytta foten en bit längre från väggen. Hälen ska fortfarande ligga kvar när knät nuddar."},
-   {n:"Knä mot vägg i tre riktningar", dose:"6 × 3 per sida", how:"För knät mot väggen rakt fram, sedan ut mot lilltån och in mot stortån."}]},
+   {n:"Knä mot vägg", img:"knee to wall ankle dorsiflexion", dose:"10 per sida", how:"Stå vänd mot väggen med ena foten en handsbredd från den, händerna mot väggen. För knät fram mot väggen utan att hälen lyfter."},
+   {n:"Knä mot vägg, längre ut", img:"knee to wall ankle mobility test", dose:"10 per sida", how:"Flytta foten en bit längre från väggen. Hälen ska fortfarande ligga kvar när knät nuddar."},
+   {n:"Knä mot vägg i tre riktningar", img:"knee to wall ankle mobility three directions", dose:"6 × 3 per sida", how:"För knät mot väggen rakt fram, sedan ut mot lilltån och in mot stortån."}]},
  M7:{name:"Handleder och underarmar", cat:"mob", golf:true, area:"Handled", steps:[
-   {n:"Handledsåttor och bönestretch", dose:"10 + 20 s", how:"Knäpp händerna och rita åttor 10 gånger. Pressa sedan handflatorna ihop framför bröstet och sänk händerna tills det sträcker, 20 s."},
-   {n:"Underarmsstretch mot bord", dose:"20 s + 20 s", how:"Händerna på bordet med fingrarna mot dig och raka armar, luta lätt bakåt. Vänd sedan händerna och lägg handryggarna mot bordet."},
-   {n:"Vindrutetorkare med kvast", dose:"10 per hand", how:"Håll kvasten i ena änden rakt upp. Vrid långsamt åt båda sidorna med underarmen, som en vindrutetorkare. Kortare grepp blir lättare."}]},
+   {n:"Handledsåttor och bönestretch", img:"prayer stretch wrist", dose:"10 + 20 s", how:"Knäpp händerna och rita åttor 10 gånger. Pressa sedan handflatorna ihop framför bröstet och sänk händerna tills det sträcker, 20 s."},
+   {n:"Underarmsstretch mot bord", img:"wrist flexor stretch hands on table", dose:"20 s + 20 s", how:"Händerna på bordet med fingrarna mot dig och raka armar, luta lätt bakåt. Vänd sedan händerna och lägg handryggarna mot bordet."},
+   {n:"Vindrutetorkare med kvast", img:"forearm pronation supination exercise with stick", dose:"10 per hand", how:"Håll kvasten i ena änden rakt upp. Vrid långsamt åt båda sidorna med underarmen, som en vindrutetorkare. Kortare grepp blir lättare."}]},
  M8:{name:"Vägg-glid", cat:"mob", area:"Axlar", steps:[
-   {n:"Underarmarna mot väggen", dose:"8–10", how:"Stå vänd mot väggen med underarmarna mot den, armbågarna i axelhöjd. Glid uppåt så långt det går bekvämt. Dra ned skulderbladen när du kommer tillbaka."},
-   {n:"Ryggen mot väggen", dose:"8–10", how:"Stå med rygg och bakhuvud mot väggen, fötterna en bit ut. Armarna i W-form mot väggen, glid upp till Y och tillbaka."},
-   {n:"W till Y med lyft", dose:"8–10", how:"Som steg 2, men lyft händerna 2 cm från väggen i toppläget och håll 2 s."}]},
+   {n:"Underarmarna mot väggen", img:"forearm wall slide", dose:"8–10", how:"Stå vänd mot väggen med underarmarna mot den, armbågarna i axelhöjd. Glid uppåt så långt det går bekvämt. Dra ned skulderbladen när du kommer tillbaka."},
+   {n:"Ryggen mot väggen", img:"wall angels exercise", dose:"8–10", how:"Stå med rygg och bakhuvud mot väggen, fötterna en bit ut. Armarna i W-form mot väggen, glid upp till Y och tillbaka."},
+   {n:"W till Y med lyft", img:"wall slide W to Y lift off", dose:"8–10", how:"Som steg 2, men lyft händerna 2 cm från väggen i toppläget och håll 2 s."}]},
  M9:{name:"Höftrotation", cat:"mob", golf:true, sides:true, area:"Höftrotation", steps:[
-   {n:"Sittande höftrotation", dose:"8 per sida", how:"Sitt på stolskanten med knäna i 90°. Håll knät still och låt foten glida utåt och sedan inåt. Det vrider höftleden åt båda hållen, som i golfsvingen."},
-   {n:"Vindrutetorkare med knäna", dose:"8 per sida", how:"Sitt i sängen eller på golvet med händerna bakom dig och fötterna brett. Fäll båda knäna åt ena sidan och sedan åt den andra."},
-   {n:"90/90-sittande", dose:"6 per sida", floor:true, how:"Sitt på golvet med båda knäna böjda 90°, ett framför och ett åt sidan. Sitt lång i ryggen och växla sida med hjälp av händerna."}]},
+   {n:"Sittande höftrotation", img:"seated hip internal external rotation", dose:"8 per sida", how:"Sitt på stolskanten med knäna i 90°. Håll knät still och låt foten glida utåt och sedan inåt. Det vrider höftleden åt båda hållen, som i golfsvingen."},
+   {n:"Vindrutetorkare med knäna", img:"windshield wipers hip mobility seated", dose:"8 per sida", how:"Sitt i sängen eller på golvet med händerna bakom dig och fötterna brett. Fäll båda knäna åt ena sidan och sedan åt den andra."},
+   {n:"90/90-sittande", img:"90 90 hip stretch", dose:"6 per sida", floor:true, how:"Sitt på golvet med båda knäna böjda 90°, ett framför och ett åt sidan. Sitt lång i ryggen och växla sida med hjälp av händerna."}]},
 
  S1:{name:"Uppresning från stol", cat:"str", area:"Ben och säte", steps:[
-   {n:"Med armstöd", how:"Hög stol eller kudde på sitsen. Fötterna bakom knäna, luta fram med näsan över tårna och res dig. Ta hjälp av armstöden så lite som möjligt."},
-   {n:"Utan händer", how:"Armarna i kors över bröstet. Res dig utan att svänga. Sätt dig kontrollerat."},
-   {n:"Långsam med vikt", how:"Håll en kasse med vattenflaskor (3–6 kg) mot bröstet. Sätt dig på 3 s och res dig i normal fart."}]},
+   {n:"Med armstöd", img:"sit to stand using armrests chair", how:"Hög stol eller kudde på sitsen. Fötterna bakom knäna, luta fram med näsan över tårna och res dig. Ta hjälp av armstöden så lite som möjligt."},
+   {n:"Utan händer", img:"sit to stand exercise arms crossed", how:"Armarna i kors över bröstet. Res dig utan att svänga. Sätt dig kontrollerat."},
+   {n:"Långsam med vikt", img:"goblet sit to stand chair", how:"Håll en kasse med vattenflaskor (3–6 kg) mot bröstet. Sätt dig på 3 s och res dig i normal fart."}]},
  S2:{name:"Armhävning", cat:"str", area:"Bröst och armar", steps:[
-   {n:"Mot vägg", how:"Händerna mot väggen i axelhöjd, fötterna en bit ut. Kroppen rak som en planka, böj armarna tills näsan nästan nuddar."},
-   {n:"Mot köksbänk", how:"Händerna på bänkskivan. Lägre vinkel ger mer vikt på armarna. Spänn magen."},
-   {n:"Mot stol eller soffkant", how:"Stadig stol mot väggen eller soffkant. Kroppen rak, sänk bröstet kontrollerat."}]},
+   {n:"Mot vägg", img:"wall push up", how:"Händerna mot väggen i axelhöjd, fötterna en bit ut. Kroppen rak som en planka, böj armarna tills näsan nästan nuddar."},
+   {n:"Mot köksbänk", img:"incline push up kitchen counter", how:"Händerna på bänkskivan. Lägre vinkel ger mer vikt på armarna. Spänn magen."},
+   {n:"Mot stol eller soffkant", img:"incline push up chair", how:"Stadig stol mot väggen eller soffkant. Kroppen rak, sänk bröstet kontrollerat."}]},
  S3:{name:"Enarmsrodd", cat:"str", sides:true, area:"Övre rygg", steps:[
-   {n:"Rodd med lätt kasse", how:"Ena handen på bord eller stol, andra handen håller en kasse på 2–4 kg. Dra armbågen bakåt mot höften och kläm ihop skulderbladen."},
-   {n:"Tyngre kasse med paus", how:"4–7 kg. Håll 1 s i toppläget, sänk på 2 s."},
-   {n:"Tung rodd med rotation", how:"7–10 kg. Låt bröstkorgen vrida med lite i toppläget, det tränar rotation med belastning."}]},
+   {n:"Rodd med lätt kasse", img:"single arm row hand on chair", how:"Ena handen på bord eller stol, andra handen håller en kasse på 2–4 kg. Dra armbågen bakåt mot höften och kläm ihop skulderbladen."},
+   {n:"Tyngre kasse med paus", img:"one arm dumbbell row", how:"4–7 kg. Håll 1 s i toppläget, sänk på 2 s."},
+   {n:"Tung rodd med rotation", img:"dumbbell row with rotation", how:"7–10 kg. Låt bröstkorgen vrida med lite i toppläget, det tränar rotation med belastning."}]},
  S4:{name:"Höftlyft", cat:"str", area:"Säte", steps:[
-   {n:"Stående höftsträck", how:"Håll i stolen och stå rak. Sträck ena benet bakåt med rakt knä och kläm med sätet, utan att svanka. Varannat ben, räkna per ben."},
-   {n:"Höftlyft i sängen", how:"Ligg på rygg med böjda knän. Tryck ned hälarna och lyft rumpan tills höft och knän är i linje. Sänk långsamt."},
-   {n:"Höftlyft på golvet, 3 s paus", floor:true, how:"Som i sängen, men på golvet, och håll 3 s i toppläget."}]},
+   {n:"Stående höftsträck", img:"standing hip extension holding chair", how:"Håll i stolen och stå rak. Sträck ena benet bakåt med rakt knä och kläm med sätet, utan att svanka. Varannat ben, räkna per ben."},
+   {n:"Höftlyft i sängen", img:"glute bridge in bed", how:"Ligg på rygg med böjda knän. Tryck ned hälarna och lyft rumpan tills höft och knän är i linje. Sänk långsamt."},
+   {n:"Höftlyft på golvet, 3 s paus", img:"glute bridge", floor:true, how:"Som i sängen, men på golvet, och håll 3 s i toppläget."}]},
  S6:{name:"Benstyrka i steg", cat:"str", sides:true, area:"Ben och höfter", steps:[
-   {n:"Uppsteg på trappsteg", how:"Håll i ledstången. Kliv upp med hela foten på steget, tryck dig upp med det övre benet och kliv ned kontrollerat."},
-   {n:"Delad knäböj med stöd", how:"Ett långt steg isär, håll i en stol. Sänk bakre knät rakt ned mot golvet och tryck upp. Främre knät över foten."},
-   {n:"Bakåtutfall med stöd", how:"Kliv bakåt i ett utfall, sänk och kliv tillbaka. Stöd i stolen vid behov."}]},
+   {n:"Uppsteg på trappsteg", img:"step up exercise stairs", how:"Håll i ledstången. Kliv upp med hela foten på steget, tryck dig upp med det övre benet och kliv ned kontrollerat."},
+   {n:"Delad knäböj med stöd", img:"split squat holding chair", how:"Ett långt steg isär, håll i en stol. Sänk bakre knät rakt ned mot golvet och tryck upp. Främre knät över foten."},
+   {n:"Bakåtutfall med stöd", img:"reverse lunge holding chair", how:"Kliv bakåt i ett utfall, sänk och kliv tillbaka. Stöd i stolen vid behov."}]},
  S7:{name:"Vedhuggaren", cat:"str", golf:true, sides:true, area:"Rotation och kraft", steps:[
-   {n:"Diagonallyft utan vikt", how:"Stå brett, händerna ihop vid ena höften. För händerna diagonalt upp över motsatt axel och låt fötter och höfter vrida med."},
-   {n:"Med vattenflaska", how:"Håll en flaska på 1–2 kg med båda händerna. Samma diagonala rörelse, kontrollerat."},
-   {n:"Snabbare med 2–4 kg", how:"Kontrollerad rörelse ned, snabbare och kraftfull uppåt. Det tränar rotationskraften i svingen."}]},
+   {n:"Diagonallyft utan vikt", img:"standing low to high wood chop exercise", how:"Stå brett, händerna ihop vid ena höften. För händerna diagonalt upp över motsatt axel och låt fötter och höfter vrida med."},
+   {n:"Med vattenflaska", img:"low to high wood chop dumbbell", how:"Håll en flaska på 1–2 kg med båda händerna. Samma diagonala rörelse, kontrollerat."},
+   {n:"Snabbare med 2–4 kg", img:"low to high woodchop medicine ball", how:"Kontrollerad rörelse ned, snabbare och kraftfull uppåt. Det tränar rotationskraften i svingen."}]},
  S8:{name:"Fågelhunden", cat:"str", sides:true, area:"Bål", steps:[
-   {n:"Stående mot vägg", how:"Händerna mot väggen. Lyft ena armen upp längs väggen och sträck motsatt ben bakåt. Håll 2 s, byt sida. Räkna per sida."},
-   {n:"På alla fyra i sängen", how:"På knän och händer i sängen eller på en matta. Sträck ena armen eller ena benet. Ryggen ska vara stilla."},
-   {n:"Arm och ben, 5 s paus", floor:true, how:"Sträck motsatt arm och ben samtidigt och håll 5 s. Ingen rotation i bäckenet."}]},
+   {n:"Stående mot vägg", img:"standing bird dog wall", how:"Händerna mot väggen. Lyft ena armen upp längs väggen och sträck motsatt ben bakåt. Håll 2 s, byt sida. Räkna per sida."},
+   {n:"På alla fyra i sängen", img:"bird dog exercise beginner", how:"På knän och händer i sängen eller på en matta. Sträck ena armen eller ena benet. Ryggen ska vara stilla."},
+   {n:"Arm och ben, 5 s paus", img:"bird dog exercise", floor:true, how:"Sträck motsatt arm och ben samtidigt och håll 5 s. Ingen rotation i bäckenet."}]},
  S9:{name:"Sidolyft", cat:"str", sides:true, area:"Höftens utsida", steps:[
-   {n:"Stående sidolyft med stöd", how:"Håll i stolen. Lyft benet rakt ut åt sidan med tårna framåt, sänk långsamt. Överkroppen ska vara upprätt."},
-   {n:"Sidoliggande benlyft", how:"Ligg på sidan i sängen. Lyft det övre benet med tårna lätt nedåt, sänk långsamt."},
-   {n:"Sidoplanka från knä", floor:true, how:"Ligg på sidan med böjda knän, armbågen under axeln. Lyft höften så att kroppen blir rak. Räkna sekunder i stället för repetitioner: 10–20 s."}]},
+   {n:"Stående sidolyft med stöd", img:"standing hip abduction holding chair", how:"Håll i stolen. Lyft benet rakt ut åt sidan med tårna framåt, sänk långsamt. Överkroppen ska vara upprätt."},
+   {n:"Sidoliggande benlyft", img:"side lying leg raise", how:"Ligg på sidan i sängen. Lyft det övre benet med tårna lätt nedåt, sänk långsamt."},
+   {n:"Sidoplanka från knä", img:"modified side plank on knees", floor:true, how:"Ligg på sidan med böjda knän, armbågen under axeln. Lyft höften så att kroppen blir rak. Räkna sekunder i stället för repetitioner: 10–20 s."}]},
  S10:{name:"Ned och upp från golvet", cat:"str", skill:true, area:"Vardagsstyrka", steps:[
-   {n:"Ned på knä och upp", reps:"3", how:"Stol framför dig, kudde under knät. Kliv ned på ett knä, sedan båda. Res dig via ett knä i taget med händerna på stolen. Hoppa över om knäna inte tillåter."},
-   {n:"Ned till sittande och upp", reps:"3", how:"Via knästående ned till sittande på golvet och samma väg upp, med stolen som stöd."},
-   {n:"Med så lite stöd som möjligt", reps:"3–5", how:"Ned till sittande och upp. Räkna hur många stöd (händer, knän) du behöver och försök minska."}]},
+   {n:"Ned på knä och upp", img:"getting down to kneeling and up with chair support", reps:"3", how:"Stol framför dig, kudde under knät. Kliv ned på ett knä, sedan båda. Res dig via ett knä i taget med händerna på stolen. Hoppa över om knäna inte tillåter."},
+   {n:"Ned till sittande och upp", img:"getting down to the floor and back up using chair", reps:"3", how:"Via knästående ned till sittande på golvet och samma väg upp, med stolen som stöd."},
+   {n:"Med så lite stöd som möjligt", img:"sitting rising test", reps:"3–5", how:"Ned till sittande och upp. Räkna hur många stöd (händer, knän) du behöver och försök minska."}]},
 
  B1:{name:"Enbensstående", cat:"bal", sides:true, area:"Balans", steps:[
-   {n:"Med en hand på stolen", how:"Stå på ett ben nära en stol och håll lätt i den. Blicken framåt."},
-   {n:"Fingertopp eller inget stöd", how:"Nudda stolen bara med fingertoppen, eller släpp när det går."},
-   {n:"Utan stöd, vrid huvudet", how:"Stå på ett ben utan stöd och vrid huvudet långsamt åt sidorna. Stolen står kvar inom räckhåll."}]},
+   {n:"Med en hand på stolen", img:"single leg stance holding chair", how:"Stå på ett ben nära en stol och håll lätt i den. Blicken framåt."},
+   {n:"Fingertopp eller inget stöd", img:"single leg stance fingertip support", how:"Nudda stolen bara med fingertoppen, eller släpp när det går."},
+   {n:"Utan stöd, vrid huvudet", img:"single leg balance head turns", how:"Stå på ett ben utan stöd och vrid huvudet långsamt åt sidorna. Stolen står kvar inom räckhåll."}]},
  B2:{name:"Golfbalans", cat:"bal", golf:true, sides:true, area:"Balans", steps:[
-   {n:"Häl mot tå med stöd", how:"Ställ ena foten direkt framför den andra, häl mot tå, med en hand på bänken eller väggen. Byt främre fot."},
-   {n:"Linjegång längs väggen", dose:"10 steg × 3", t:120, how:"Gå häl mot tå längs en vägg, 10 steg, vänd och gå tillbaka."},
-   {n:"Långsam sving med avslut", dose:"8 sving", t:150, how:"Sving kvasten långsamt. Stanna i avslutsposition med vikten på framåtbenet och baksidans häl uppe i 5 s."}]},
+   {n:"Häl mot tå med stöd", img:"tandem stance balance exercise", how:"Ställ ena foten direkt framför den andra, häl mot tå, med en hand på bänken eller väggen. Byt främre fot."},
+   {n:"Linjegång längs väggen", img:"tandem walk heel to toe", dose:"10 steg × 3", t:120, how:"Gå häl mot tå längs en vägg, 10 steg, vänd och gå tillbaka."},
+   {n:"Långsam sving med avslut", img:"golf finish position balance drill", dose:"8 sving", t:150, how:"Sving kvasten långsamt. Stanna i avslutsposition med vikten på framåtbenet och baksidans häl uppe i 5 s."}]},
 
  T1:{name:"Baksida lår", cat:"stretch", sides:true, area:"Baksida lår", steps:[
-   {n:"Sittande på stolskanten", how:"Sitt på stolskanten med ena benet rakt fram och hälen i golvet. Fäll framåt från höften med rak rygg tills det sträcker bak i låret."},
-   {n:"Hälen på trappsteg", how:"Stå och ställ hälen på ett lågt steg med rakt knä. Fäll framåt från höften, ryggen rak."},
-   {n:"Liggande med handduk", how:"Ligg på rygg (säng eller golv), handduk runt foten. Dra upp det raka benet tills det sträcker. Andra benet böjt."}]},
+   {n:"Sittande på stolskanten", img:"seated hamstring stretch edge of chair", how:"Sitt på stolskanten med ena benet rakt fram och hälen i golvet. Fäll framåt från höften med rak rygg tills det sträcker bak i låret."},
+   {n:"Hälen på trappsteg", img:"standing hamstring stretch heel on step", how:"Stå och ställ hälen på ett lågt steg med rakt knä. Fäll framåt från höften, ryggen rak."},
+   {n:"Liggande med handduk", img:"supine hamstring stretch with towel", how:"Ligg på rygg (säng eller golv), handduk runt foten. Dra upp det raka benet tills det sträcker. Andra benet böjt."}]},
  T2:{name:"Höftböjare", cat:"stretch", golf:true, sides:true, area:"Höftens framsida", steps:[
-   {n:"Stående delad stretch", how:"Håll i en stol och ta ett långt steg. Bakre hälen lyft. Kläm med sätet och tippa bäckenet bakåt, svanka inte. Du känner det framtill på bakre höften."},
-   {n:"Halvknästående", floor:true, how:"Ett knä på en kudde, andra foten fram. Kläm med sätet och för höften lätt framåt. Stöd i stol vid behov."},
-   {n:"Halvknästående med sidoböj", floor:true, how:"Som steg 2, sträck armen på bakre benets sida upp och luta åt motsatt sida."}]},
+   {n:"Stående delad stretch", img:"standing hip flexor stretch", how:"Håll i en stol och ta ett långt steg. Bakre hälen lyft. Kläm med sätet och tippa bäckenet bakåt, svanka inte. Du känner det framtill på bakre höften."},
+   {n:"Halvknästående", img:"half kneeling hip flexor stretch", floor:true, how:"Ett knä på en kudde, andra foten fram. Kläm med sätet och för höften lätt framåt. Stöd i stol vid behov."},
+   {n:"Halvknästående med sidoböj", img:"half kneeling hip flexor stretch side bend", floor:true, how:"Som steg 2, sträck armen på bakre benets sida upp och luta åt motsatt sida."}]},
  T3:{name:"Säte (figur 4)", cat:"stretch", golf:true, sides:true, area:"Säte och höft", steps:[
-   {n:"Sittande figur 4", how:"Sitt på stolen och lägg ena vristen på motsatt knä. Luta överkroppen framåt med rak rygg. Det går bra att inte komma långt."},
-   {n:"Figur 4 med rotation", how:"Som steg 1, men luta bröstet mot det böjda knät och sedan mot foten."},
-   {n:"Liggande figur 4", how:"Ligg på rygg, vristen på motsatt knä, dra det nedre benet mot dig. Säng går bra."}]},
+   {n:"Sittande figur 4", img:"seated figure 4 stretch chair", how:"Sitt på stolen och lägg ena vristen på motsatt knä. Luta överkroppen framåt med rak rygg. Det går bra att inte komma långt."},
+   {n:"Figur 4 med rotation", img:"seated piriformis stretch chair lean", how:"Som steg 1, men luta bröstet mot det böjda knät och sedan mot foten."},
+   {n:"Liggande figur 4", img:"supine figure 4 stretch", how:"Ligg på rygg, vristen på motsatt knä, dra det nedre benet mot dig. Säng går bra."}]},
  T4:{name:"Bröst i dörrkarm", cat:"stretch", golf:true, sides:true, area:"Bröst och axel", steps:[
-   {n:"Armbåge i axelhöjd", how:"Underarmen mot dörrkarmen, armbågen i axelhöjd. Vrid bröstet bort från armen tills det sträcker framtill i bröstet."},
-   {n:"Armbåge högt", how:"Armbågen en bit över axelhöjd. Sträcker längre ned i bröstmuskeln."},
-   {n:"Båda armarna, kliv fram", how:"Båda underarmarna mot dörrkarmen, kliv sakta igenom öppningen. Räknas som båda sidor samtidigt."}]},
+   {n:"Armbåge i axelhöjd", img:"doorway pec stretch 90 degrees", how:"Underarmen mot dörrkarmen, armbågen i axelhöjd. Vrid bröstet bort från armen tills det sträcker framtill i bröstet."},
+   {n:"Armbåge högt", img:"doorway pec stretch high elbow", how:"Armbågen en bit över axelhöjd. Sträcker längre ned i bröstmuskeln."},
+   {n:"Båda armarna, kliv fram", img:"doorway chest stretch both arms", how:"Båda underarmarna mot dörrkarmen, kliv sakta igenom öppningen. Räknas som båda sidor samtidigt."}]},
  T6:{name:"Sida och lats", cat:"stretch", golf:true, sides:true, area:"Sida och rygg", steps:[
-   {n:"Sittande sidoböj", how:"Sitt, sträck ena armen upp över huvudet och luta åt motsatt sida. Båda sittbenen kvar mot stolen."},
-   {n:"Häng i dörrkarmen", how:"Håll i dörrkarmen med båda händerna i höjd med huvudet och luta höften åt motsatt håll."},
-   {n:"Bönestretch mot stol", floor:true, how:"Knästå framför en stol med armbågarna på sitsen och händerna ihop. Skjut rumpan mot hälarna."}]},
+   {n:"Sittande sidoböj", img:"seated side bend stretch", how:"Sitt, sträck ena armen upp över huvudet och luta åt motsatt sida. Båda sittbenen kvar mot stolen."},
+   {n:"Häng i dörrkarmen", img:"door frame lat stretch", how:"Håll i dörrkarmen med båda händerna i höjd med huvudet och luta höften åt motsatt håll."},
+   {n:"Bönestretch mot stol", img:"kneeling lat stretch elbows on chair", floor:true, how:"Knästå framför en stol med armbågarna på sitsen och händerna ihop. Skjut rumpan mot hälarna."}]},
  H1:{name:"Andning 4–6", cat:"breath", area:"Nedvarvning", steps:[
-   {n:"Lugn magandning", dose:"2 min", t:120, how:"Sitt bekvämt med en hand på magen. Andas in genom näsan i 4 s så att magen höjs, ut genom munnen i 6 s. Lugnar nervsystemet och minskar muskelspänning."}]}
+   {n:"Lugn magandning", img:"diaphragmatic breathing seated hand on belly", dose:"2 min", t:120, how:"Sitt bekvämt med en hand på magen. Andas in genom näsan i 4 s så att magen höjs, ut genom munnen i 6 s. Lugnar nervsystemet och minskar muskelspänning."}]}
 };
 
 const TEMPLATES = {
@@ -660,7 +660,8 @@ function exCard(it, idx){
     h("div",{style:"text-align:right"}, h("div",{class:"dose"}, d.text), stepDots(it.step, max))));
   const tags = h("div",{class:"row"}, h("span",{class:"tag"},ex.area), ex.golf?h("span",{class:"tag golf"},"Golf"):null, allowed<max && it.step===allowed ? h("span",{class:"small muted"},"Nästa steg kräver golvet") : null);
   card.append(tags);
-  card.append(h("details",{open: it.step===1 && !it.done ? true : null}, h("summary",{},"Så gör du"), h("p",{class:"small"}, step.how)));
+  card.append(h("details",{open: it.step===1 && !it.done ? true : null}, h("summary",{},"Så gör du"), h("p",{class:"small"}, step.how),
+    step.img ? h("p",{class:"small"}, h("a",{href:imgSearch(step.img), target:"_blank", rel:"noopener"}, "Se bilder på övningen ↗"), h("span",{class:"muted"}, " Bildsökning, kan visa varianter. Följ texten om de skiljer sig.")) : null));
   if(d.hold){ card.append(h("div",{}, h("button",{onclick:()=>runTimer(ex.name, d.hold, d.sets, ex.cat==="stretch"?d.sides:ex.sides)}, `Starta timer ${d.hold} s`))); }
   if(ex.cat === "breath"){ card.append(h("div",{}, h("button",{onclick:()=>runBreath()},"Starta andningsguide 2 min"))); }
   const r = h("div",{class:"row"});
@@ -707,9 +708,14 @@ function runBreath(){
   stopTimer(); const plan=[]; for(let i=0;i<12;i++){ plan.push({l:"Andas in genom näsan", t:4}); plan.push({l:"Andas ut genom munnen", t:6, gap:true}); }
   playPlan(plan, ()=>toast("Bra. Passet är snart klart."));
 }
+function imgSearch(q){ return "https://www.google.com/search?tbm=isch&q=" + encodeURIComponent(q); }
+function fmtClock(s){ return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`; }
 function playPlan(plan, onEnd){
   const bar = $("#timer"); let i=0, left=plan[0].t;
-  const draw = ()=>{ bar.innerHTML=""; bar.append(h("div",{style:"min-width:0"}, h("div",{class:"small"}, plan[i].l), h("div",{class:"big"}, fmtSec(left))), h("button",{onclick:stopTimer},"Stoppa")); bar.hidden=false; };
+  const total = plan.reduce((a,p)=>a+p.t,0);
+  const remaining = ()=> left + plan.slice(i+1).reduce((a,p)=>a+p.t,0);
+  const draw = ()=>{ bar.innerHTML=""; bar.append(h("div",{style:"min-width:0"}, h("div",{class:"small"}, plan[i].l), h("div",{class:"big"}, fmtSec(left)),
+    plan.length>1 ? h("div",{class:"small",style:"opacity:.85;font-variant-numeric:tabular-nums"}, `Totalt kvar ${fmtClock(remaining())} av ${fmtClock(total)}`) : null), h("button",{onclick:stopTimer},"Stoppa")); bar.hidden=false; };
   draw();
   timerInt = setInterval(()=>{
     left--; if(left<=3 && left>0 && !plan[i].gap) beep(520,60);

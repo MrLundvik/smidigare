@@ -1,6 +1,6 @@
 // Smidigare service worker: gör appen tillgänglig offline.
 // Öka versionen när index.html ändras så att telefonen hämtar den nya versionen.
-const CACHE = "smidigare-v5";
+const CACHE = "smidigare-v6";
 const CORE = ["./", "index.html", "manifest.webmanifest", "icons/icon.svg", "icons/icon-192.png", "icons/icon-512.png"];
 
 self.addEventListener("install", e => {

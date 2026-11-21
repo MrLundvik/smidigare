@@ -41,7 +41,8 @@ Det finns också ett eget pass, **Före golfrundan**, med cirka 10 min dynamisk 
 - **Faser:** Fas 1 (v. 1–4) 2 × 30 s stretch och 2 × 8–10 styrka. Fas 2 (v. 5–8) 2 × 45 s och 2 × 10–12. Fas 3 (v. 9–16) 2 × 60 s och 3 × 10–12. Du går upp en fas efter 4 veckor om du har tränat minst cirka 3 dagar i veckan.
 - **Övningssteg:** varje övning har 3 steg. Tre gånger *Lätt* i rad flyttar den upp ett steg. *Tungt* två gånger, eller *Gjorde ont*, flyttar den ned ett steg. Steg som kräver golvet är spärrade tills du slår på det i inställningarna.
 - **Tester var 4:e vecka:** sitt och räck, rygg-klia och 30 s uppresning (Senior Fitness Test), sittande rotation, enbensstående, valfritt sitting-rising test, vikt och midjemått. Ett sparat test går att ändra eller radera under *Testtillfällen*. Tester som kan bli negativa har en ±-knapp, eftersom sifferknappsatsen på Android ofta saknar minustecken.
-- **Promenader** ligger utanför 45-minuterstaket. Veckomålen är 2 intervallpromenader och 1 promenad i backe eller trappor, och det finns en inbyggd intervallguide.
+- **Promenader** ligger utanför 45-minuterstaket. Veckomålen är 2 intervallpromenader och 1 promenad i backe eller trappor, och det finns en inbyggd intervallguide. Timern visar både tiden för det aktuella momentet och den totala tiden kvar, som räknar ned till 0 när guiden är klar.
+- **Bilder:** varje övningssteg har en länk under *Så gör du* som öppnar en bildsökning på Google. Sökträffarna kan visa varianter, så texten gäller om de skiljer sig.
 - **Dags att uppdatera:** när de flesta övningar är på högsta steget, eller efter 8 veckor i fas 3, säger appen till. Den ger då en sammanfattning som du kan klistra in hos Claude för att få nästa nivå.
 
 ## Uppdatera appen
@@ -49,7 +50,7 @@ Det finns också ett eget pass, **Före golfrundan**, med cirka 10 min dynamisk 
 Appen publiceras med GitHub Pages från grenen `main`, mappen `/` (root). Ändringar som pushas till `main` ligger ute efter en till två minuter.
 
 1. Ersätt `index.html` i repot med den nya versionen.
-2. Öka versionen i `sw.js` (`const CACHE = "smidigare-v5"` → `v6`).
+2. Öka versionen i `sw.js` (`const CACHE = "smidigare-v6"` → `v7`).
 
 Telefonen hämtar den nya versionen nästa gång appen öppnas med internet. Ibland behöver appen stängas och öppnas en gång till.
 
